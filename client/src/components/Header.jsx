@@ -3,43 +3,79 @@ import { useSelector } from "react-redux";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
-  
 
   return (
-    <header className="pl-10 pr-10 bg-gray-200 text-white shadow-md">
-      <div className="container mx-auto px-4 flex justify-between items-center py-3">
-        <div className="flex items-center">
-          <Link to="/home">
-            <img src="#" width={180} height={100}/>
+    <header className="bg-white shadow-sm fixed w-full z-50">
+      <div className="container mx-auto px-6 py-4">
+        <div className="flex items-center justify-between">
+          {/* Logo */}
+          <Link to="/" className="flex items-center space-x-2">
+            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
+              Ghuroo
+            </span>
           </Link>
-        </div>
 
-        <nav className="hidden md:flex space-x-8">
-          
-          
-          <Link
-            to="/profile"
-            className="flex items-center space-x-2 font-bold"
-          >
+          {/* Navigation */}
+          <nav className="hidden md:flex items-center space-x-8">
+            <Link
+              to="/destinations"
+              className="text-gray-600 hover:text-blue-600 transition-colors"
+            >
+              Destinations
+            </Link>
+            <Link
+              to="/tours"
+              className="text-gray-600 hover:text-blue-600 transition-colors"
+            >
+              Tours
+            </Link>
+            <Link
+              to="/about"
+              className="text-gray-600 hover:text-blue-600 transition-colors"
+            >
+              About
+            </Link>
+            <Link
+              to="/contact"
+              className="text-gray-600 hover:text-blue-600 transition-colors"
+            >
+              Contact
+            </Link>
+          </nav>
+
+          {/* Auth Section */}
+          <div className="flex items-center space-x-4">
             {currentUser ? (
-              <img
-                src={currentUser.profilePicture}
-                alt="profile"
-                className="h-10 w-10 rounded-full object-cover"
-              />
+              <Link to="/profile" className="flex items-center space-x-2">
+                <img
+                  src={currentUser.profilePicture}
+                  alt="profile"
+                  className="h-10 w-10 rounded-full object-cover border-2 border-blue-500"
+                />
+              </Link>
             ) : (
-              <span className="text-green-700 hover:text-gray-400 transition duration-300">
-                Sign In
-              </span>
+              <div className="flex items-center space-x-4">
+                <Link
+                  to="/signin"
+                  className="text-gray-600 hover:text-blue-600 transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/signup"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-colors"
+                >
+                  Sign Up
+                </Link>
+              </div>
             )}
-          </Link>
-        </nav>
+          </div>
 
-        <div className="md:hidden">
-          <button className="text-gray-300 focus:outline-none">
+          {/* Mobile Menu Button */}
+          <button className="md:hidden text-gray-600 hover:text-blue-600 focus:outline-none">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-8 w-8"
+              className="h-6 w-6"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
