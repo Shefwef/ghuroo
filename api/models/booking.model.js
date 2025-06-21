@@ -8,6 +8,7 @@ export const BookingSchema = {
   booking_date: Date,
   status: String,
   total_price: Number,
+  number_of_persons: Number,
   created_at: Date,
 };
 
@@ -38,6 +39,10 @@ export const validateBooking = (bookingData) => {
     errors.push('total_price is required and must be a positive number');
   }
   
+  if (!bookingData.number_of_persons || typeof bookingData.number_of_persons !== 'number' || bookingData.number_of_persons <= 0) {
+    errors.push('number_of_persons is required and must be a positive number');
+  }
+  
   if (bookingData.status && !VALID_STATUSES.includes(bookingData.status)) {
     errors.push(`status must be one of: ${VALID_STATUSES.join(', ')}`);
   }
@@ -48,7 +53,6 @@ export const validateBooking = (bookingData) => {
   };
 };
 
-
 export class Booking {
   constructor(bookingData) {
     this.id = bookingData.id || uuidv4();
@@ -57,6 +61,7 @@ export class Booking {
     this.booking_date = bookingData.booking_date;
     this.status = bookingData.status || BOOKING_DEFAULTS.status;
     this.total_price = bookingData.total_price;
+    this.number_of_persons = bookingData.number_of_persons;
     this.created_at = bookingData.created_at || new Date();
   }
 
@@ -68,6 +73,7 @@ export class Booking {
       booking_date: this.booking_date,
       status: this.status,
       total_price: this.total_price,
+      number_of_persons: this.number_of_persons,
       created_at: this.created_at
     };
   }
