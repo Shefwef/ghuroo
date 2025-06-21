@@ -59,9 +59,16 @@ export const signin = async (req, res, next) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res
-      .cookie("access_token", idToken, { httpOnly: true, expires: new Date(Date.now() + 3600000) })
-      .status(200)
+    
+      res.cookie('access_token', idToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000 
+      });
+
+      
+      res.status(200)
       .json({ uid: decoded.uid, email: userRecord.email, username: user.full_name, role:user.role });
   } catch (err) {
     next(err);
@@ -109,13 +116,27 @@ export const google = async (req, res, next) => {
   }
 };
 
-// Signout
-export const signout = (req, res) => {
-  res.clearCookie("access_token");
-  const redirectTo = req.body.redirectTo || '/';
 
-  res.status(200).json({
-    message: "Signout success!",
-    redirectTo: redirectTo
-  });
+export const signout = (req, res) => {
+  try {
+   
+    res.clearCookie('access_token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/'
+    });
+    
+    res.status(200).json({
+      success: true,
+      message: "Signout successful!"
+    });
+
+  } catch (error) {
+    console.error('Signout error:', error);
+    res.status(500).json({
+      success: false,
+      message: "Signout failed"
+    });
+  }
 };

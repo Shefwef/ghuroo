@@ -1,6 +1,5 @@
 import { useSelector } from "react-redux";
 import { useRef, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
 import {
   getDownloadURL,
@@ -17,11 +16,11 @@ import {
   deleteUserStart,
   deleteUserSuccess,
   deleteUserFailure,
+  signOut
 } from "../redux/user/userSlice";
 
 export default function Profile() {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const fileRef = useRef(null);
   const [image, setImage] = useState(undefined);
   const [imagePercent, setImagePercent] = useState(0);
@@ -107,9 +106,12 @@ export default function Profile() {
   const handleSignOut = async () => {
     try {
       await fetch("/api/auth/signout", {
-        method: 'POST'
+        method: 'GET',
+        headers: {
+        'Content-Type': 'application/json',
+      },
       });
-      navigate("/");
+      dispatch(signOut());
     } catch (error) {
       console.log(error);
     }
