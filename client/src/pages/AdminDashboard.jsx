@@ -60,18 +60,20 @@ export default function AdminDashboard() {
       <table>
         <thead>
           <tr>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Actions</th>
+            <th> Username </th>
+            <th> Email </th>
+            <th> Role </th>
+            <th> Actions </th>
           </tr>
         </thead>
         <tbody>
           {users.map(user => (
             <tr key={user.id}>
-              <td>{user.username}</td>
-              <td>{user.email}</td>
+              <td>{user.full_name} </td>
+              <td> {user.email}</td>
+              <td> {user.role} </td>
               <td>
-                <button onClick={() => handleDeleteUser(user.id)}>Delete</button>
+                <button onClick={() => handleDeleteUser(user.id)}> Delete </button>
               </td>
             </tr>
           ))}

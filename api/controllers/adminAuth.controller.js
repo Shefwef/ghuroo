@@ -1,5 +1,6 @@
 // controllers/adminAuth.controller.js
 import { auth, db } from "../firebase.js";
+import { UserModel } from "../models/user.model.js";
 import admin from "../firebase.js";
 
 export const adminSignup = async (req, res, next) => {
@@ -12,6 +13,12 @@ export const adminSignup = async (req, res, next) => {
   }
 
   try {
+
+    const existingUser = await UserModel.findByEmail(email);
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+    
     // First create Firebase auth user
     const userRecord = await auth.createUser({
       email,
@@ -23,11 +30,11 @@ export const adminSignup = async (req, res, next) => {
     await auth.setCustomUserClaims(userRecord.uid, { admin: true });
 
     // Store additional admin data in Firestore
-    await db.collection("admins").doc(userRecord.uid).set({
-      username,
-      email,
-      isAdmin: true,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    await UserModel.create({
+      id: userRecord.uid,
+      full_name: username,
+      email: email,
+      role: "admin"
     });
 
     res.status(201).json({ message: "Admin created successfully" });
@@ -57,16 +64,15 @@ export const adminSignin = async (req, res, next) => {
       }
   
       const userRecord = await auth.getUser(decoded.uid);
-      const adminDoc = await db.collection("admins").doc(decoded.uid).get();
+      const admin = await UserModel.findById(decoded.uid);
       
-      if (!adminDoc.exists) {
+      if (!admin || admin.role !== 'admin') {
         return res.status(404).json({ 
           success: false,
           message: "Admin record not found" 
         });
       }
   
-      const profile = adminDoc.data();
   
       res
         .cookie("admin_token", idToken, { 
@@ -80,8 +86,9 @@ export const adminSignin = async (req, res, next) => {
           success: true,
           uid: decoded.uid, 
           email: userRecord.email, 
-          username: profile.username,
-          isAdmin: true
+          username: admin.full_name,
+          isAdmin: true,
+          role: admin.role
         });
     } catch (err) {
       console.error("Admin signin error:", err);
