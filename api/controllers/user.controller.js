@@ -1,5 +1,6 @@
 // controllers/user.controller.js
-import { auth, db } from "../firebase.js";
+import { auth } from "../firebase.js";
+import { UserModel } from "../models/user.model.js";
 import { errorHandler } from "../utils/error.js";
 
 // Test
@@ -15,16 +16,30 @@ export const updateUser = async (req, res, next) => {
     await auth.updateUser(uid, { password: updates.password });
     delete updates.password;
   }
-  await auth.updateUser(uid, { email: updates.email, displayName: updates.username });
+  
+  // Update Firebase Auth user profile
+    const authUpdates = {};
+    if (updates.email) authUpdates.email = updates.email;
+    if (updates.username) authUpdates.displayName = updates.username;
+    
+    if (Object.keys(authUpdates).length > 0) {
+      await auth.updateUser(uid, authUpdates);
+    }
 
-  await db.collection("users").doc(uid).update({
-    username: updates.username,
-    email: updates.email,
-    profilePicture: updates.profilePicture,
-  });
+  const userUpdates = {};
+    if (updates.username) userUpdates.full_name = updates.username;
+    if (updates.email) userUpdates.email = updates.email;
+    if (updates.profilePicture) userUpdates.profilePicture = updates.profilePicture;
 
-  const userDoc = await db.collection("users").doc(uid).get();
-  res.status(200).json({ uid, ...userDoc.data() });
+  const updatedUser = await UserModel.update(uid, userUpdates);
+
+  res.status(200).json({
+      uid: updatedUser.id,
+      full_name: updatedUser.full_name,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      profilePicture: updatedUser.profilePicture || null,
+      created_at: updatedUser.created_at });
 };
 
 // Delete user
@@ -33,7 +48,27 @@ export const deleteUser = async (req, res, next) => {
   if (uid !== req.params.id) return next(errorHandler(401, "You can delete only your own account!"));
 
   await auth.deleteUser(uid);
-  await db.collection("users").doc(uid).delete();
+  await UserModel.delete(uid);
 
   res.status(200).json("User has been deleted...");
+};
+
+
+// Get user profile
+export const getUserProfile = async (req, res, next) => {
+  const uid = req.user.uid;
+  const user = await UserModel.findById(uid);
+  
+  if (!user) {
+    return next(errorHandler(404, "User not found"));
+  }
+
+  res.status(200).json({
+    uid: user.id,
+    full_name: user.full_name,
+    email: user.email,
+    role: user.role,
+    created_at: user.created_at
+  });
+
 };

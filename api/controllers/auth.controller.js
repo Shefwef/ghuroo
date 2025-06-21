@@ -1,7 +1,6 @@
 // controllers/auth.controller.js
-import { auth, db } from "../firebase.js";
-
-import admin from "../firebase.js";
+import { auth} from "../firebase.js";
+import { UserModel } from "../models/user.model.js";
 
 
 export const signup = async (req, res, next) => {
@@ -17,16 +16,23 @@ if (!username || !email || !password) {
 
 
   try {
+
+    const existingUser = await UserModel.findByEmail(email);
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+
     const userRecord = await auth.createUser({
       email,
       password,
       displayName: username,
     });
 
-    await db.collection("users").doc(userRecord.uid).set({
-      username,
-      email,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    await UserModel.create({
+      id: userRecord.uid,
+      full_name: username,
+      email: email,
+      role: "user"
     });
 
     res.status(201).json({ message: "User created successfully" });
@@ -38,17 +44,25 @@ if (!username || !email || !password) {
 
 export const signin = async (req, res, next) => {
   const { idToken } = req.body;
+
+  if (!idToken) {
+    return res.status(400).json({ message: "ID token is required" });
+  }
+  
   try {
     const decoded = await auth.verifyIdToken(idToken);
     const userRecord = await auth.getUser(decoded.uid);
 
-    const userDoc = await db.collection("users").doc(decoded.uid).get();
-    const profile = userDoc.data();
+    const user = await UserModel.findById(decoded.uid);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
     res
       .cookie("access_token", idToken, { httpOnly: true, expires: new Date(Date.now() + 3600000) })
       .status(200)
-      .json({ uid: decoded.uid, email: userRecord.email, username: profile.username });
+      .json({ uid: decoded.uid, email: userRecord.email, username: user.full_name, role:user.role });
   } catch (err) {
     next(err);
   }
@@ -60,18 +74,36 @@ export const google = async (req, res, next) => {
   const { email, name, photo } = req.body;
   try {
     let userRecord;
+    let user;
+
     try {
       userRecord = await auth.getUserByEmail(email);
+      user = await UserModel.findById(userRecord.uid);
+
+      if (!user) {
+        user = await UserModel.create({ 
+          id: userRecord.uid, 
+          full_name: name, 
+          email: email, 
+          role: "user" 
+        });
+      }
+
     } catch {
       userRecord = await auth.createUser({ email, displayName: name });
-      await db.collection("users").doc(userRecord.uid).set({ username: name, email, photo });
+      user = await UserModel.create({ id: userRecord.uid, full_name: name, email: email, role: "user" });
+    }
+
+    
+    if (!user) {
+    return res.status(500).json({ message: "Failed to create or retrieve user" });
     }
 
     const firebaseToken = await auth.createCustomToken(userRecord.uid);
     res
       .cookie("access_token", firebaseToken, { httpOnly: true, expires: new Date(Date.now() + 3600000) })
       .status(200)
-      .json({ uid: userRecord.uid, email, username: userRecord.displayName, photo });
+      .json({ uid: userRecord.uid, email, username: user.full_name, photo, role: user.role });
   } catch (err) {
     next(err);
   }
@@ -80,5 +112,10 @@ export const google = async (req, res, next) => {
 // Signout
 export const signout = (req, res) => {
   res.clearCookie("access_token");
-  res.status(200).json("Signout success!");
+  const redirectTo = req.body.redirectTo || '/';
+
+  res.status(200).json({
+    message: "Signout success!",
+    redirectTo: redirectTo
+  });
 };

@@ -7,10 +7,16 @@ export const verifyToken = async (req, res, next) => {
   if (!token) return next(errorHandler(401, "Not authenticated!"));
 
   try {
-    const decoded = await auth.verifySessionCookie(token);
+    const decoded = await auth.verifyIdToken(token);
     req.user = { uid: decoded.uid };
     next();
-  } catch {
-    next(errorHandler(403, "Token is not valid!"));
+  } catch (err){
+     try {
+      const decoded = await auth.verifySessionCookie(token);
+      req.user = { uid: decoded.uid };
+      next();
+    } catch {
+      next(errorHandler(403, "Token is not valid!"));
+    }
   }
 };
