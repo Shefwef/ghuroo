@@ -67,7 +67,9 @@ export default function Profile() {
     e.preventDefault();
     try {
       dispatch(updateUserStart());
-      const res = await fetch(`/api/user/update/${currentUser._id}`, {
+
+      const userId = currentUser._id || currentUser.uid || currentUser.id;
+      const res = await fetch(`/api/user/update/${userId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -87,9 +89,15 @@ export default function Profile() {
   };
 
   const handleDeleteAccount = async () => {
+    if (!window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+      return;
+    }
+
     try {
       dispatch(deleteUserStart());
-      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+
+      const userId = currentUser._id || currentUser.uid || currentUser.id;
+      const res = await fetch(`/api/user/delete/${userId}`, {
         method: "DELETE",
       });
       const data = await res.json();

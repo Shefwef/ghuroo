@@ -8,16 +8,22 @@ export const test = (req, res) => res.json({ message: "API is working!" });
 
 // Update user
 export const updateUser = async (req, res, next) => {
-  const uid = req.user.uid;
-  if (uid !== req.params.id) return next(errorHandler(401, "You can update only your own account!"));
+  try {
+    const uid = req.user.uid;
+    const paramId = req.params.id;
+    
+    if (uid !== paramId && req.user._id !== paramId && req.user.id !== paramId) {
+      return next(errorHandler(401, "You can update only your own account!"));
+    }
 
-  const updates = { ...req.body };
-  if (updates.password) {
-    await auth.updateUser(uid, { password: updates.password });
-    delete updates.password;
-  }
-  
-  // Update Firebase Auth user profile
+    const updates = { ...req.body };
+    
+    if (updates.password) {
+      await auth.updateUser(uid, { password: updates.password });
+      delete updates.password;
+    }
+    
+    // Update Firebase Auth user profile
     const authUpdates = {};
     if (updates.email) authUpdates.email = updates.email;
     if (updates.username) authUpdates.displayName = updates.username;
@@ -26,49 +32,60 @@ export const updateUser = async (req, res, next) => {
       await auth.updateUser(uid, authUpdates);
     }
 
-  const userUpdates = {};
+    const userUpdates = {};
     if (updates.username) userUpdates.full_name = updates.username;
     if (updates.email) userUpdates.email = updates.email;
     if (updates.profilePicture) userUpdates.profilePicture = updates.profilePicture;
 
-  const updatedUser = await UserModel.update(uid, userUpdates);
 
-  res.status(200).json({
-      uid: updatedUser.id,
-      full_name: updatedUser.full_name,
-      email: updatedUser.email,
-      role: updatedUser.role,
-      profilePicture: updatedUser.profilePicture || null,
-      created_at: updatedUser.created_at });
+    if (Object.keys(userUpdates).length > 0) {
+      const updatedUser = await UserModel.update(uid, userUpdates);
+      
+      res.status(200).json({
+        _id: updatedUser.id,
+        uid: updatedUser.id,
+        username: updatedUser.full_name,
+        full_name: updatedUser.full_name,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        profilePicture: updatedUser.profilePicture || null,
+        created_at: updatedUser.created_at
+      });
+    } else {
+      const user = await UserModel.findById(uid);
+      res.status(200).json({
+        _id: user.id,
+        uid: user.id,
+        username: user.full_name,
+        full_name: user.full_name,
+        email: user.email,
+        role: user.role,
+        profilePicture: user.profilePicture || null,
+        created_at: user.created_at
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
 };
 
 // Delete user
 export const deleteUser = async (req, res, next) => {
-  const uid = req.user.uid;
-  if (uid !== req.params.id) return next(errorHandler(401, "You can delete only your own account!"));
+  try {
+    const uid = req.user.uid;
+    const paramId = req.params.id;
 
-  await auth.deleteUser(uid);
-  await UserModel.delete(uid);
+    if (uid !== paramId && req.user._id !== paramId && req.user.id !== paramId) {
+      return next(errorHandler(401, "You can delete only your own account!"));
+    }
 
-  res.status(200).json("User has been deleted...");
-};
+    await auth.deleteUser(uid);
+    
+    await UserModel.delete(uid);
 
-
-// Get user profile
-export const getUserProfile = async (req, res, next) => {
-  const uid = req.user.uid;
-  const user = await UserModel.findById(uid);
-  
-  if (!user) {
-    return next(errorHandler(404, "User not found"));
+    res.status(200).json({ message: "User has been deleted successfully" });
+  } catch (error) {
+    next(error);
   }
-
-  res.status(200).json({
-    uid: user.id,
-    full_name: user.full_name,
-    email: user.email,
-    role: user.role,
-    created_at: user.created_at
-  });
-
 };
+
