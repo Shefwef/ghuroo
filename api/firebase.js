@@ -3,15 +3,15 @@ import admin from "firebase-admin";
 import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
+import dotenv from "dotenv";
+dotenv.config();
 
-// Fix for __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// ✅ Path to your actual JSON file (NOT firebase.js)
-const serviceAccount = JSON.parse(
-  readFileSync(join(__dirname, "./web-project-11a59-firebase-adminsdk-fbsvc-3871f5a4c2.json"), "utf8")
-);
+
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),

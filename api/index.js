@@ -11,7 +11,7 @@ import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import cors from "cors";
 import path from "path";
-import "./firebase.js";
+import { db, auth } from "./firebase.js";
 
 dotenv.config();
 
