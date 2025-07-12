@@ -4,6 +4,24 @@ import { TourModel } from "../models/tour.model.js";
 
 const router = express.Router();
 
+// Create a new tour
+router.post("/", async (req, res, next) => {
+  try {
+    const tourData = req.body;
+    const newTour = await TourModel.create(tourData);
+    res.status(201).json({
+      success: true,
+      data: newTour,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+
 // Get all tours
 router.get("/", async (req, res, next) => {
   try {
