@@ -32,9 +32,6 @@ export default function App() {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="tours" element={<AdminTours />} />
           <Route path="users" element={<AdminUsers />} />
-          {/* Add more admin routes here */}
-          {/* <Route path="bookings" element={<AdminBookings />} /> */}
-          {/* <Route path="users" element={<AdminUsers />} /> */}
         </Route>
 
         {/* User Routes */}
