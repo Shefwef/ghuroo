@@ -137,7 +137,7 @@ export default function Tours() {
             </div>
             <div>
               <button className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 px-4 rounded-md transition-colors">
-                🔍
+                Search
               </button>
             </div>
           </div>
