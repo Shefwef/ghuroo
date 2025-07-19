@@ -29,28 +29,32 @@ export default function Home() {
             Handpicked destinations, seamless booking, and unforgettable
             experiences.
           </p>
-          <div className="flex gap-3">
-            <Link
-              to="/tours"
-              className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold px-8 py-3 rounded-full shadow-lg transition-colors text-lg"
+          {/* Search Destination Section */}
+          <form
+            className="w-full max-w-xl flex bg-white/90 rounded-full shadow-lg overflow-hidden border border-blue-200"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const query = e.target.elements.destination.value.trim();
+              if (query)
+                window.location.href = `/destinations/${encodeURIComponent(
+                  query.toLowerCase()
+                )}`;
+            }}
+          >
+            <input
+              type="text"
+              name="destination"
+              className="flex-1 px-6 py-3 text-gray-700 text-base bg-transparent focus:outline-none"
+              placeholder="Search your dream destination..."
+              autoComplete="off"
+            />
+            <button
+              type="submit"
+              className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-3 transition-colors text-base"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M17 8l4 4m0 0l-4 4m4-4H3"
-                />
-              </svg>
-              Explore Tours
-            </Link>
-          </div>
+              Search
+            </button>
+          </form>
         </div>
       </section>
 
