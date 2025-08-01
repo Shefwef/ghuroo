@@ -1,6 +1,8 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation , useNavigate } from "react-router-dom";
+import { useSelector , useDispatch } from "react-redux";
 import { Search, ExternalLink, Bell, User } from "lucide-react";
 import Breadcrumb from "./Breadcrumb";
+import { signOut } from "../redux/user/userSlice";
 
 function formatStep(str) {
   if (!str) return "Home";
@@ -8,9 +10,25 @@ function formatStep(str) {
 }
 
 export default function AdminHeader() {
+   const { currentUser } = useSelector((state) => state.user);
   const location = useLocation();
   const pathnames = location.pathname.split("/").filter(Boolean);
   const steps = pathnames.length ? pathnames.map(formatStep) : ["Home"];
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = async() => {
+      try {
+            await fetch('/api/auth/signout', {
+              credentials: 'include'
+            });
+            dispatch(signOut());
+            navigate('/');
+          } catch (error) {
+            console.log(error);
+          }
+  
+    }
 
   return (
     <header className="h-20 bg-white shadow-[0_2px_8px_rgba(0,0,0,0.04)] border-b border-[#F1F5F9] flex items-center px-8 sticky top-0 z-30">
@@ -37,20 +55,24 @@ export default function AdminHeader() {
           <span className="absolute -top-1 -right-1 w-3 h-3 bg-[#FF6B47] rounded-full border-2 border-white"></span>
         </button>
 
-        {/* User Profile */}
+        {/* Admin Profile */}
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 bg-gradient-to-r from-[#FF6B47] to-[#FF8B73] rounded-lg flex items-center justify-center">
             <User className="h-4 w-4 text-white" />
           </div>
           <div className="hidden md:block">
-            <p className="text-sm font-medium text-[#0F172A]">Admin User</p>
-            <p className="text-xs text-[#64748B]">admin@ghuroo.com</p>
+            <p className="text-sm font-medium text-[#0F172A]">
+              {currentUser?.username || 'Admin'}
+            </p>
+            <p className="text-xs text-[#64748B]">
+              {currentUser?.email}
+            </p>
           </div>
         </div>
 
         {/* View Site Link */}
         <Link
-          to="/"
+          onClick={handleLogout}
           className="flex items-center space-x-2 px-4 py-2 bg-[#F8FAFC] hover:bg-[#F1F5F9] text-[#64748B] hover:text-[#0F172A] rounded-lg transition-all duration-300 border border-[#E2E8F0] hover:border-[#CBD5E1] text-sm font-medium"
         >
           <ExternalLink className="h-4 w-4" />

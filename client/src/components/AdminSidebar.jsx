@@ -1,4 +1,6 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { signOut } from "../redux/user/userSlice";
 import {
   Home,
   Map,
@@ -14,6 +16,21 @@ import {
 export default function AdminSidebar() {
   const location = useLocation();
   const isActive = (path) => location.pathname === path;
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = async() => {
+    try {
+          await fetch('/api/auth/signout', {
+            credentials: 'include'
+          });
+          dispatch(signOut());
+          navigate('/admin/login');
+        } catch (error) {
+          console.log(error);
+        }
+
+  }
 
   return (
     <aside className="w-56 bg-white border-r border-[#F1F5F9] shadow-[0_0_20px_rgba(0,0,0,0.05)] flex flex-col justify-between fixed inset-y-0 left-0 z-40">
@@ -116,14 +133,14 @@ export default function AdminSidebar() {
       {/* Help Section */}
       <div className="px-4 py-6 border-t border-[#F1F5F9]">
         <Link
-          to="profile"
+          to="/admin/profile"
           className="flex items-center px-4 py-3 rounded-lg font-medium text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-all duration-300"
         >
           <UserCircle className="h-5 w-5 mr-3" />
           Profile
         </Link>
         <Link
-          to="logout"
+          onClick={handleLogout}
           className="flex items-center px-4 py-3 rounded-lg font-medium text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-all duration-300"
         >
           <LogIn className="h-5 w-5 mr-3" />

@@ -1,6 +1,7 @@
 import User from '../models/user.model.js';
 import Tour from '../models/tour.model.js';
 import { errorHandler } from '../utils/error.js';
+import bcrypt from 'bcryptjs';
 
 export const adminTest = (req, res) => res.json({ message: "Admin API is working!" });
 
@@ -73,6 +74,43 @@ export const getDashboardStats = async (req, res, next) => {
       tourCount,
       adminCount,
       recentTours
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateAdmin = async (req, res, next) => {
+  try {
+    const adminId = req.user.id;
+    const paramId = req.params.id;
+
+    if (adminId !== paramId) {
+      return next(errorHandler(401, "You can update only your own admin account!"));
+    }
+
+    const updates = { ...req.body };
+
+    if (updates.password) {
+      updates.password = await bcrypt.hash(updates.password, 12);
+    }
+
+    const updatedAdmin = await User.findByIdAndUpdate(
+      adminId,
+      { $set: updates },
+      { new: true }
+    ).select('-password');
+
+    if (!updatedAdmin) {
+      return next(errorHandler(404, "Admin not found"));
+    }
+
+    res.status(200).json({
+      _id: updatedAdmin._id,
+      username: updatedAdmin.full_name,
+      email: updatedAdmin.email,
+      role: updatedAdmin.role,
+      profilePicture: updatedAdmin.profilePicture || null
     });
   } catch (error) {
     next(error);

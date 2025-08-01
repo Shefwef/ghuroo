@@ -31,8 +31,17 @@ export default function Profile() {
     e.preventDefault();
     try {
       dispatch(updateUserStart());
-      const res = await fetch(`/api/user/update/${currentUser._id}`, {
-        method: 'POST',
+      let url = '';
+      let method = '';
+      if (currentUser.role === 'admin') {
+        method = 'PUT';
+        url = `/api/admin/update/${currentUser._id}`;
+      } else {
+        method = 'POST';
+        url = `/api/user/update/${currentUser._id}`;
+      }
+      const res = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -122,6 +131,8 @@ export default function Profile() {
           {loading ? 'Loading...' : 'Update'}
         </button>
       </form>
+      {/* delete and signout for users */}
+      {currentUser.role !== 'admin' && (
       <div className="flex justify-between mt-5">
         <span
           onClick={handleDeleteAccount}
@@ -133,6 +144,7 @@ export default function Profile() {
           Sign out
         </span>
       </div>
+      )}
       {error && (
         <p className="text-red-700 mt-5">{error}</p>
       )}
