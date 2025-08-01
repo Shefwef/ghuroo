@@ -9,6 +9,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminTours from "./pages/AdminTours";
+import AdminBookings from "./pages/AdminBookings";
 import AdminRoute from "./components/AdminRoute";
 import UserLayout from "./components/UserLayout";
 import AdminLayout from "./components/AdminLayout";
@@ -28,6 +29,7 @@ export default function App() {
             </AdminRoute>
           }
         >
+          <Route path="bookings" element={<AdminBookings />} />
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="tours" element={<AdminTours />} />
           <Route path="users" element={<AdminUsers />} />
