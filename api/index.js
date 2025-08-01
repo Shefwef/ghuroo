@@ -5,6 +5,8 @@ import userRoutes from "./routes/user.route.js";
 import authRoutes from "./routes/auth.route.js";
 import tourRoutes from "./routes/tour.route.js";
 import bookingRoutes from "./routes/booking.route.js";
+import blogRoutes from "./routes/blog.route.js";
+import blogCommentRoutes from "./routes/blogComment.route.js";
 import adminRoutes from "./routes/admin.route.js";
 import adminAuthRoutes from "./routes/adminAuth.route.js";
 import reviewRoutes from "./routes/review.route.js";
@@ -47,7 +49,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/tours", tourRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/reviews", reviewRoutes);
-// app.use("/api/tour/:id", tourDetailsRoutes);
+app.use("/api/blogs", blogRoutes);
+app.use("/api/blog-comments", blogCommentRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/admin/auth", adminAuthRoutes);
 
