@@ -8,6 +8,7 @@ import {
   Users,
   UserCircle,
   LogIn,
+  MessageSquare,
   UserPlus,
   HelpCircle,
   TrendingUp,
@@ -79,6 +80,22 @@ export default function AdminSidebar() {
               }`}
             />
             Tours
+          </Link>
+          
+          <Link
+            to="/admin/reviews"
+            className={`flex items-center px-4 py-3 rounded-lg font-medium transition-all duration-300 ${
+              isActive("/admin/reviews")
+                ? "bg-gradient-to-r from-[#FF6B47] to-[#FF8B73] text-white shadow-[0_4px_12px_rgba(255,107,71,0.2)]"
+                : "text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#0F172A]"
+            }`}
+          >
+            <MessageSquare
+              className={`h-5 w-5 mr-3 ${
+                isActive("/admin/reviews") ? "text-white" : "text-[#64748B]"
+              }`}
+            />
+            Reviews
           </Link>
 
           <Link

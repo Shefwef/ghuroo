@@ -11,7 +11,7 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminTours from "./pages/AdminTours";
 import AdminBookings from "./pages/AdminBookings";
-//import AdminProfile from "./pages/AdminProfile";
+import AdminReviews from "./pages/AdminReviews";
 import AdminRoute from "./components/AdminRoute";
 import UserLayout from "./components/UserLayout";
 import AdminLayout from "./components/AdminLayout";
@@ -38,6 +38,7 @@ export default function App() {
             <Route path="users" element={<AdminUsers />} />
             <Route path="analytics" element={<AdminAnalytics />} />
             <Route path="profile" element={<Profile />}  />
+            <Route path="reviews" element={<AdminReviews />}  />
         </Route>
 
         {/* User Routes */}
