@@ -5,6 +5,10 @@ import SignUp from "./pages/SignUp";
 import Profile from "./pages/Profile";
 import Tours from "./pages/Tours";
 import UserBookings from "./pages/UserBookings";
+import UserBlogs from "./pages/UserBlogs";
+import Blogs from "./pages/Blogs";
+import BlogDetails from "./pages/BlogDetails";
+import WriteBlog from "./pages/WriteBlog";
 import TourDetails from "./pages/TourDetails";
 import PrivateRoute from "./components/PrivateRoute";
 import AdminLogin from "./pages/AdminLogin";
@@ -48,9 +52,13 @@ export default function App() {
           <Route path="signup" element={<SignUp />} />
           <Route path="tours" element={<Tours />} />
           <Route path="tour/:id" element={<TourDetails />} />
+          <Route path="/blogs" element={<Blogs />} />
+          <Route path="/blogs/:id" element={<BlogDetails />} />
+          <Route path="/blogs/write" element={<WriteBlog />} />
           <Route element={<PrivateRoute />}>
             <Route path="profile" element={<Profile />} />
             <Route path="my-bookings" element={<UserBookings />} />
+            <Route path="my-blogs" element={<UserBlogs />} />
           </Route>
         </Route>
       </Routes>

@@ -41,9 +41,21 @@ export default function Header() {
             >
               Contact
             </Link>
+            <Link
+              to="/blogs"
+              className="text-gray-600 hover:text-blue-600 transition-colors"
+            >
+              Blogs
+            </Link>
             {currentUser && (
               <Link to="/my-bookings" className="text-gray-600 hover:text-blue-600 transition-colors">
                 My Bookings
+              </Link>
+              
+            )}
+            {currentUser && (
+              <Link to="/my-blogs" className="text-gray-600 hover:text-blue-600 transition-colors">
+                My Blogs
               </Link>
             )}
           </nav>
