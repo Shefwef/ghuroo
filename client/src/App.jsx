@@ -15,6 +15,7 @@ import AdminRoute from "./components/AdminRoute";
 import UserLayout from "./components/UserLayout";
 import AdminLayout from "./components/AdminLayout";
 import AdminUsers from "./pages/AdminUsers";
+import AdminAnalytics from "./pages/AdminAnalytics";
 
 export default function App() {
   return (
@@ -30,10 +31,11 @@ export default function App() {
             </AdminRoute>
           }
         >
-          <Route path="bookings" element={<AdminBookings />} />
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="tours" element={<AdminTours />} />
-          <Route path="users" element={<AdminUsers />} />
+            <Route path="bookings" element={<AdminBookings />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="tours" element={<AdminTours />} />
+            <Route path="users" element={<AdminUsers />} />
+            <Route path="/admin/analytics" element={<AdminAnalytics />} />
         </Route>
 
         {/* User Routes */}

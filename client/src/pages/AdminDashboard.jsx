@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 export default function AdminDashboard() {
+
   const [stats, setStats] = useState({
     totalUsers: 1247,
     totalTours: 0,
@@ -20,8 +21,14 @@ export default function AdminDashboard() {
   });
 
   const { currentUser } = useSelector((state) => state.user);
+  const [bookings, setBookings] = useState([]);
+
   console.log(currentUser);
   const navigate = useNavigate();
+
+  const handleQuickActionsClick = (path) => {
+    navigate(path);
+  };
 
   // Fetch real stats
   useEffect(() => {
@@ -46,6 +53,10 @@ export default function AdminDashboard() {
             ...prev,
             totalBookings: bookingsData.data.length
           }));
+
+          setBookings(bookingsData.data.slice(0, 2));
+
+          console.log(bookingsData);
         }
 
         const usersResponse = await fetch("/api/admin/users", {
@@ -219,21 +230,27 @@ export default function AdminDashboard() {
           </h3>
 
           <div className="grid grid-cols-2 gap-4">
-            <button className="p-4 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0] hover:bg-[#F1F5F9] hover:border-[#CBD5E1] transition-all duration-300 group">
+            <button 
+            onClick={() => handleQuickActionsClick("/admin/tours")}
+            className="p-4 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0] hover:bg-[#F1F5F9] hover:border-[#CBD5E1] transition-all duration-300 group">
               <div className="w-10 h-10 bg-[#FF6B47] rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                 <Map className="h-5 w-5 text-white" />
               </div>
               <p className="text-sm font-medium text-[#0F172A]">Add Tour</p>
             </button>
 
-            <button className="p-4 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0] hover:bg-[#F1F5F9] hover:border-[#CBD5E1] transition-all duration-300 group">
+            <button 
+            onClick={() => handleQuickActionsClick("/admin/users")}
+            className="p-4 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0] hover:bg-[#F1F5F9] hover:border-[#CBD5E1] transition-all duration-300 group">
               <div className="w-10 h-10 bg-[#4A90E2] rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                 <Users className="h-5 w-5 text-white" />
               </div>
               <p className="text-sm font-medium text-[#0F172A]">Manage Users</p>
             </button>
 
-            <button className="p-4 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0] hover:bg-[#F1F5F9] hover:border-[#CBD5E1] transition-all duration-300 group">
+            <button 
+            onClick={() => handleQuickActionsClick("/admin/bookings")}
+            className="p-4 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0] hover:bg-[#F1F5F9] hover:border-[#CBD5E1] transition-all duration-300 group">
               <div className="w-10 h-10 bg-[#4ECDC4] rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                 <CalendarDays className="h-5 w-5 text-white" />
               </div>
@@ -242,7 +259,9 @@ export default function AdminDashboard() {
               </p>
             </button>
 
-            <button className="p-4 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0] hover:bg-[#F1F5F9] hover:border-[#CBD5E1] transition-all duration-300 group">
+            <button 
+            onClick={() => handleQuickActionsClick("/admin/analytics")}
+            className="p-4 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0] hover:bg-[#F1F5F9] hover:border-[#CBD5E1] transition-all duration-300 group">
               <div className="w-10 h-10 bg-[#9B59B6] rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                 <TrendingUp className="h-5 w-5 text-white" />
               </div>
@@ -259,7 +278,9 @@ export default function AdminDashboard() {
             <h3 className="text-lg font-semibold text-[#0F172A]">
               Recent Bookings
             </h3>
-            <button className="text-[#FF6B47] text-sm font-medium hover:text-[#E5533A] transition-colors">
+            <button 
+            onClick={() => handleQuickActionsClick("/admin/bookings")}
+            className="text-[#FF6B47] text-sm font-medium hover:text-[#E5533A] transition-colors">
               View All
             </button>
           </div>
@@ -267,43 +288,43 @@ export default function AdminDashboard() {
 
         <div className="p-6">
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-[#F8FAFC] rounded-xl">
-              <div className="flex items-center space-x-4">
-                <div className="w-10 h-10 bg-gradient-to-r from-[#FF6B47] to-[#FF8B73] rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">M</span>
+            {bookings.length === 0 ? (
+              <p className="text-sm text-gray-500">No recent bookings.</p>
+            ) : (
+              bookings.map((booking) => (
+                <div
+                  key={booking._id}
+                  className="flex items-center justify-between p-4 bg-[#F8FAFC] rounded-xl"
+                >
+                  <div className="flex items-center space-x-4">
+                    <div className="w-10 h-10 bg-gradient-to-r from-[#FF6B47] to-[#FF8B73] rounded-lg flex items-center justify-center">
+                      <span className="text-white font-bold text-sm">
+                        T
+                      </span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-[#0F172A]">
+                        {booking.tour_id?.title || "Tour"}
+                      </p>
+                      <p className="text-xs text-[#64748B]">
+                        Booked by {booking.user_id?.full_name || "User"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-semibold text-[#0F172A]">
+                      ${booking.total_price}
+                    </p>
+                    <p className="text-xs text-[#64748B]">
+                      {new Date(booking.createdAt).toLocaleTimeString()}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-[#0F172A]">
-                    Mountain Adventure
-                  </p>
-                  <p className="text-xs text-[#64748B]">Booked by John Doe</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-sm font-semibold text-[#0F172A]">$299</p>
-                <p className="text-xs text-[#64748B]">2 hours ago</p>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between p-4 bg-[#F8FAFC] rounded-xl">
-              <div className="flex items-center space-x-4">
-                <div className="w-10 h-10 bg-gradient-to-r from-[#4A90E2] to-[#5BA0F2] rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">B</span>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-[#0F172A]">
-                    Beach Paradise
-                  </p>
-                  <p className="text-xs text-[#64748B]">Booked by Jane Smith</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-sm font-semibold text-[#0F172A]">$199</p>
-                <p className="text-xs text-[#64748B]">4 hours ago</p>
-              </div>
-            </div>
+              ))
+            )}
           </div>
         </div>
+
       </div>
     </div>
   );

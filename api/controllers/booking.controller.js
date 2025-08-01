@@ -59,7 +59,10 @@ export const getBookingsByTour = async (req, res) => {
 
 export const getAllBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find().populate("user_id tour_id");
+    const bookings = await Booking.find()
+           .populate('tour_id', 'title') 
+           .populate('user_id', 'full_name')
+           .sort({ createdAt: -1 });
     res.json({ success: true, data: bookings });
   } catch (error) {
     console.error("Get all bookings error:", error);
@@ -85,7 +88,7 @@ export const getRevenues = async (req, res) => {
       success: true,
       totalRevenue
     });
-    
+
   } catch (err) {
     console.error('Error calculating revenue:', err);
     return res.status(500).json({
