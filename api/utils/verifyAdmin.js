@@ -1,18 +1,20 @@
 // utils/verifyAdmin.js
-import { auth } from "../firebase.js";
+import { verifyToken } from "./jwt.js";
 import { errorHandler } from "./error.js";
 
 export const verifyAdmin = async (req, res, next) => {
+  const token = req.cookies.admin_token;
+  
+  if (!token) return next(errorHandler(401, "Not authenticated as admin!"));
+
   try {
-    const idToken = req.cookies.admin_token;
-    if (!idToken) return next(errorHandler(401, 'Unauthorized - No admin token'));
-
-    const decoded = await auth.verifyIdToken(idToken);
-    if (!decoded.admin) return next(errorHandler(403, 'Forbidden - Not an admin'));
-
+    const decoded = verifyToken(token);
+    if (!decoded.admin) {
+      return next(errorHandler(403, "Not authorized as admin!"));
+    }
     req.user = decoded;
     next();
   } catch (err) {
-    next(err);
+    next(errorHandler(403, "Admin token is not valid!"));
   }
 };
