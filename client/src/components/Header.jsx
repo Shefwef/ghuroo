@@ -41,6 +41,11 @@ export default function Header() {
             >
               Contact
             </Link>
+            {currentUser && (
+              <Link to="/my-bookings" className="text-gray-600 hover:text-blue-600 transition-colors">
+                My Bookings
+              </Link>
+            )}
           </nav>
 
           {/* Auth Section */}

@@ -57,34 +57,45 @@ export default function TourDetails() {
   };
 
   const handleBooking = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!currentUser) {
-      navigate("/signin");
-      return;
+  if (!currentUser) {
+    console.log("You need to log in first");
+    navigate("/signin");
+    return;
+  }
+
+  try {
+    const bookingPayload = {
+      user_id: currentUser._id, // Use _id from MongoDB
+      tour_id: tour._id,
+      booking_date: bookingData.date,
+      total_price: totalPrice,
+      number_of_persons: bookingData.groupSize,
+      status: "pending",
+    };
+
+    console.log("Sending booking payload:", bookingPayload);
+
+    const response = await fetch("/api/bookings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(bookingPayload),
+    });
+
+    const data = await response.json();
+    console.log("Booking response:", data);
+
+    if (data.success) {
+      alert("Booking submitted successfully! You will receive a confirmation email shortly.");
+    } else {
+      alert("Booking failed: " + (data.message || "Unknown error"));
     }
-
-    try {
-      const bookingPayload = {
-        tourId: id,
-        userId: currentUser.id,
-        ...bookingData,
-        totalAmount: totalPrice,
-        bookingDate: new Date().toISOString(),
-      };
-
-      // Here you would typically send the booking to your backend
-      console.log("Booking data:", bookingPayload);
-
-      // For now, just show an alert
-      alert(
-        "Booking submitted successfully! You will receive a confirmation email shortly."
-      );
-    } catch (err) {
-      alert("Error submitting booking. Please try again.");
-    }
-  };
-
+  } catch (err) {
+    console.error("Booking error:", err);
+    alert("Error submitting booking. Please try again.");
+  }
+};
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">

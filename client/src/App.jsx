@@ -4,6 +4,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Profile from "./pages/Profile";
 import Tours from "./pages/Tours";
+import UserBookings from "./pages/UserBookings";
 import TourDetails from "./pages/TourDetails";
 import PrivateRoute from "./components/PrivateRoute";
 import AdminLogin from "./pages/AdminLogin";
@@ -44,6 +45,7 @@ export default function App() {
           <Route path="tour/:id" element={<TourDetails />} />
           <Route element={<PrivateRoute />}>
             <Route path="profile" element={<Profile />} />
+            <Route path="my-bookings" element={<UserBookings />} />
           </Route>
         </Route>
       </Routes>
