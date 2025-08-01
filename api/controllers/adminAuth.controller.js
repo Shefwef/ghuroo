@@ -1,39 +1,24 @@
-// controllers/adminAuth.controller.js
-import { auth, db } from "../firebase.js";
-import { UserModel } from "../models/user.model.js";
-import admin from "../firebase.js";
+import User from '../models/user.model.js';
+import { generateToken } from '../utils/jwt.js';
+import { errorHandler } from '../utils/error.js';
 
 export const adminSignup = async (req, res, next) => {
-  const username = req.body.username;
-  const email = req.body.email;
-  const password = req.body.password;
+  const { username, email, password } = req.body;
 
   if (!username || !email || !password) {
-    return res.status(400).json({ message: "All fields are required" });
+    return next(errorHandler(400, "All fields are required"));
   }
 
   try {
-
-    const existingUser = await UserModel.findByEmail(email);
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: "Email already exists" });
+      return next(errorHandler(400, "Email already exists"));
     }
-    
-    // First create Firebase auth user
-    const userRecord = await auth.createUser({
+
+    const newAdmin = await User.create({
+      full_name: username,
       email,
       password,
-      displayName: username,
-    });
-
-    // Set custom claim to mark as admin
-    await auth.setCustomUserClaims(userRecord.uid, { admin: true });
-
-    // Store additional admin data in Firestore
-    await UserModel.create({
-      id: userRecord.uid,
-      full_name: username,
-      email: email,
       role: "admin"
     });
 
@@ -44,61 +29,39 @@ export const adminSignup = async (req, res, next) => {
 };
 
 export const adminSignin = async (req, res, next) => {
-    const { idToken } = req.body;
-    
-    if (!idToken) {
-      return res.status(400).json({ 
-        success: false,
-        message: "ID token is required" 
-      });
+  try {
+    const { email, password } = req.body;
+
+    const admin = await User.findOne({ email, role: 'admin' });
+    if (!admin) {
+      return next(errorHandler(404, "Admin not found"));
     }
-  
-    try {
-      const decoded = await auth.verifyIdToken(idToken);
-      
-      if (!decoded.admin) {
-        return res.status(403).json({ 
-          success: false,
-          message: "Not authorized as admin" 
-        });
-      }
-  
-      const userRecord = await auth.getUser(decoded.uid);
-      const admin = await UserModel.findById(decoded.uid);
-      
-      if (!admin || admin.role !== 'admin') {
-        return res.status(404).json({ 
-          success: false,
-          message: "Admin record not found" 
-        });
-      }
-  
-  
-      res
-        .cookie("admin_token", idToken, { 
-          httpOnly: true, 
-          expires: new Date(Date.now() + 3600000),
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict'
-        })
-        .status(200)
-        .json({ 
-          success: true,
-          uid: decoded.uid, 
-          email: userRecord.email, 
-          username: admin.full_name,
-          isAdmin: true,
-          role: admin.role
-        });
-    } catch (err) {
-      console.error("Admin signin error:", err);
-      res.status(500).json({ 
-        success: false,
-        message: "Internal server error",
-        error: err.message 
-      });
+
+    const isPasswordValid = await admin.comparePassword(password);
+    if (!isPasswordValid) {
+      return next(errorHandler(401, "Invalid password"));
     }
-  };
+
+    const token = generateToken(admin._id, true);
+
+    res.cookie('admin_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000
+    });
+
+    res.status(200).json({
+      success: true,
+      _id: admin._id,
+      email: admin.email,
+      username: admin.full_name,
+      role: admin.role
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
 export const adminSignout = (req, res) => {
   res.clearCookie("admin_token");

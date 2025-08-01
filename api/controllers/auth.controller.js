@@ -1,37 +1,25 @@
-// controllers/auth.controller.js
-import { auth} from "../firebase.js";
-import { UserModel } from "../models/user.model.js";
+import User from '../models/user.model.js';
+import { generateToken } from '../utils/jwt.js';
+import { errorHandler } from '../utils/error.js';
 
 
 export const signup = async (req, res, next) => {
+  const { username, email, password } = req.body;
 
- 
-const username = req.body.username;
-const email = req.body.email;
-const password = req.body.password;
-
-if (!username || !email || !password) {
-  return res.status(400).json({ message: "All fields are required" });
-}
-
+  if (!username || !email || !password) {
+    return next(errorHandler(400, "All fields are required"));
+  }
 
   try {
-
-    const existingUser = await UserModel.findByEmail(email);
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: "Email already exists" });
+      return next(errorHandler(400, "Email already exists"));
     }
 
-    const userRecord = await auth.createUser({
+    const newUser = await User.create({
+      full_name: username,
       email,
       password,
-      displayName: username,
-    });
-
-    await UserModel.create({
-      id: userRecord.uid,
-      full_name: username,
-      email: email,
       role: "user"
     });
 
@@ -43,33 +31,34 @@ if (!username || !email || !password) {
 
 
 export const signin = async (req, res, next) => {
-  const { idToken } = req.body;
-
-  if (!idToken) {
-    return res.status(400).json({ message: "ID token is required" });
-  }
-  
   try {
-    const decoded = await auth.verifyIdToken(idToken);
-    const userRecord = await auth.getUser(decoded.uid);
+    const { email, password } = req.body;
 
-    const user = await UserModel.findById(decoded.uid);
-
+    const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return next(errorHandler(404, "User not found"));
     }
 
+    const isPasswordValid = await user.comparePassword(password);
+    if (!isPasswordValid) {
+      return next(errorHandler(401, "Invalid password"));
+    }
+
+    const token = generateToken(user._id, user.role === 'admin');
     
-      res.cookie('access_token', idToken, {
+    res.cookie('access_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 24 * 60 * 60 * 1000 
-      });
+      maxAge: 24 * 60 * 60 * 1000
+    });
 
-      
-      res.status(200)
-      .json({ uid: decoded.uid, email: userRecord.email, username: user.full_name, role:user.role });
+    res.json({
+      _id: user._id,
+      email: user.email,
+      username: user.full_name,
+      role: user.role
+    });
   } catch (err) {
     next(err);
   }
@@ -78,39 +67,39 @@ export const signin = async (req, res, next) => {
 
 // Google sign-in
 export const google = async (req, res, next) => {
-  const { email, name, photo } = req.body;
   try {
-    let userRecord;
-    let user;
+    const { email, name, photo } = req.body;
 
-    try {
-      userRecord = await auth.getUserByEmail(email);
-      user = await UserModel.findById(userRecord.uid);
+    let user = await User.findOne({ email });
 
-      if (!user) {
-        user = await UserModel.create({ 
-          id: userRecord.uid, 
-          full_name: name, 
-          email: email, 
-          role: "user" 
-        });
-      }
-
-    } catch {
-      userRecord = await auth.createUser({ email, displayName: name });
-      user = await UserModel.create({ id: userRecord.uid, full_name: name, email: email, role: "user" });
-    }
-
-    
     if (!user) {
-    return res.status(500).json({ message: "Failed to create or retrieve user" });
+      // Create random password for Google auth users
+      const randomPassword = Math.random().toString(36).slice(-8);
+      user = await User.create({
+        full_name: name,
+        email,
+        password: randomPassword,
+        profilePicture: photo,
+        role: "user"
+      });
     }
 
-    const firebaseToken = await auth.createCustomToken(userRecord.uid);
-    res
-      .cookie("access_token", firebaseToken, { httpOnly: true, expires: new Date(Date.now() + 3600000) })
-      .status(200)
-      .json({ uid: userRecord.uid, email, username: user.full_name, photo, role: user.role });
+    const token = generateToken(user._id, user.role === 'admin');
+
+    res.cookie('access_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000
+    });
+
+    res.status(200).json({
+      _id: user._id,
+      email: user.email,
+      username: user.full_name,
+      photo: user.profilePicture,
+      role: user.role
+    });
   } catch (err) {
     next(err);
   }
@@ -119,21 +108,12 @@ export const google = async (req, res, next) => {
 
 export const signout = (req, res) => {
   try {
-   
-    res.clearCookie('access_token', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      path: '/'
-    });
-    
+    res.clearCookie('access_token');
     res.status(200).json({
       success: true,
       message: "Signout successful!"
     });
-
   } catch (error) {
-    console.error('Signout error:', error);
     res.status(500).json({
       success: false,
       message: "Signout failed"
