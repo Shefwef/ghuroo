@@ -131,20 +131,22 @@ export default function Profile() {
           {loading ? 'Loading...' : 'Update'}
         </button>
       </form>
-      {/* delete and signout for users */}
-      {currentUser.role !== 'admin' && (
+      {/* delete for users */}
+      
       <div className="flex justify-between mt-5">
+        {currentUser.role !== 'admin' && (
         <span
           onClick={handleDeleteAccount}
           className="text-red-700 cursor-pointer"
         >
           Delete account
         </span>
+      )}
         <span onClick={handleSignOut} className="text-red-700 cursor-pointer">
           Sign out
         </span>
       </div>
-      )}
+      
       {error && (
         <p className="text-red-700 mt-5">{error}</p>
       )}

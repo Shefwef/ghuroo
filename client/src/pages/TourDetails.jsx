@@ -19,6 +19,13 @@ export default function TourDetails() {
   });
   const [totalPrice, setTotalPrice] = useState(0);
 
+  // Review state
+  const [reviews, setReviews] = useState([]);
+  const [showAllReviews, setShowAllReviews] = useState(false);
+  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: "" });
+  const [reviewError, setReviewError] = useState("");
+  const [reviewSuccess, setReviewSuccess] = useState("");
+
   useEffect(() => {
     fetchTour();
   }, [id]);
@@ -30,6 +37,10 @@ export default function TourDetails() {
       setTotalPrice(basePrice + taxes);
     }
   }, [tour, bookingData.groupSize]);
+
+  useEffect(() => {
+    if (tour) fetchRecentReviews();
+  }, [tour]);
 
   const fetchTour = async () => {
     try {
@@ -48,6 +59,20 @@ export default function TourDetails() {
     }
   };
 
+  const fetchRecentReviews = async () => {
+    const url = showAllReviews
+      ? `/api/reviews/tour/${tour._id}`
+      : `/api/reviews/tour/${tour._id}/recent`;
+    const res = await fetch(url);
+    const data = await res.json();
+    setReviews(data.data || []);
+  };
+
+  useEffect(() => {
+    if (tour) fetchRecentReviews();
+    // eslint-disable-next-line
+  }, [showAllReviews]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setBookingData((prev) => ({
@@ -57,45 +82,87 @@ export default function TourDetails() {
   };
 
   const handleBooking = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!currentUser) {
-    console.log("You need to log in first");
-    navigate("/signin");
-    return;
-  }
-
-  try {
-    const bookingPayload = {
-      user_id: currentUser._id, // Use _id from MongoDB
-      tour_id: tour._id,
-      booking_date: bookingData.date,
-      total_price: totalPrice,
-      number_of_persons: bookingData.groupSize,
-      status: "pending",
-    };
-
-    console.log("Sending booking payload:", bookingPayload);
-
-    const response = await fetch("/api/bookings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(bookingPayload),
-    });
-
-    const data = await response.json();
-    console.log("Booking response:", data);
-
-    if (data.success) {
-      alert("Booking submitted successfully! You will receive a confirmation email shortly.");
-    } else {
-      alert("Booking failed: " + (data.message || "Unknown error"));
+    if (!currentUser) {
+      console.log("You need to log in first");
+      navigate("/signin");
+      return;
     }
-  } catch (err) {
-    console.error("Booking error:", err);
-    alert("Error submitting booking. Please try again.");
-  }
-};
+
+    try {
+      const bookingPayload = {
+        user_id: currentUser._id, // Use _id from MongoDB
+        tour_id: tour._id,
+        booking_date: bookingData.date,
+        total_price: totalPrice,
+        number_of_persons: bookingData.groupSize,
+        status: "pending",
+      };
+
+      console.log("Sending booking payload:", bookingPayload);
+
+      const response = await fetch("/api/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bookingPayload),
+      });
+
+      const data = await response.json();
+      console.log("Booking response:", data);
+
+      if (data.success) {
+        alert("Booking submitted successfully! You will receive a confirmation email shortly.");
+      } else {
+        alert("Booking failed: " + (data.message || "Unknown error"));
+      }
+    } catch (err) {
+      console.error("Booking error:", err);
+      alert("Error submitting booking. Please try again.");
+    }
+  };
+
+  const handleReviewChange = (e) => {
+    setReviewForm({ ...reviewForm, [e.target.name]: e.target.value });
+  };
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    setReviewError("");
+    setReviewSuccess("");
+    if (!currentUser) {
+      setReviewError("You must be signed in to leave a review.");
+      return;
+    }
+    if (!reviewForm.rating || reviewForm.rating < 1 || reviewForm.rating > 5) {
+      setReviewError("Rating must be between 1 and 5.");
+      return;
+    }
+    try {
+      const payload = {
+        user_id: currentUser._id,
+        tour_id: tour._id,
+        rating: Number(reviewForm.rating),
+        comment: reviewForm.comment,
+      };
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setReviewSuccess("Review submitted!");
+        setReviewForm({ rating: 5, comment: "" });
+        fetchRecentReviews();
+      } else {
+        setReviewError(data.message || "Failed to submit review.");
+      }
+    } catch (err) {
+      setReviewError("Error submitting review.");
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -309,6 +376,88 @@ export default function TourDetails() {
               </form>
             </div>
           </div>
+        </div>
+
+        {/* Reviews Section */}
+        <div className="bg-white rounded-lg shadow-md p-6 mt-8">
+          <h3 className="text-xl font-semibold mb-4">Reviews</h3>
+          <form onSubmit={handleReviewSubmit} className="mb-6">
+            <div className="flex items-center gap-4 mb-2">
+              <label className="font-medium">Your Rating:</label>
+              <select
+                name="rating"
+                value={reviewForm.rating}
+                onChange={handleReviewChange}
+                className="border rounded px-2 py-1"
+                required
+              >
+                {[1,2,3,4,5].map((star) => (
+                  <option key={star} value={star}>{star} Star{star > 1 ? "s" : ""}</option>
+                ))}
+              </select>
+            </div>
+            <textarea
+              name="comment"
+              value={reviewForm.comment}
+              onChange={handleReviewChange}
+              placeholder="Write your comment..."
+              className="w-full border rounded px-3 py-2 mb-2"
+              rows={3}
+            />
+            <button
+              type="submit"
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+              Submit Review
+            </button>
+            {reviewError && <div className="text-red-600 mt-2">{reviewError}</div>}
+            {reviewSuccess && <div className="text-green-600 mt-2">{reviewSuccess}</div>}
+          </form>
+
+          {/* Reviews List */}
+          {reviews.length === 0 ? (
+            <div className="text-gray-500">No reviews yet.</div>
+          ) : (
+            <div>
+              {reviews.map((r, idx) => (
+                <div key={r._id || idx} className="border-b py-3 flex gap-3 items-start">
+                  <img
+                    src={r.user_id?.profilePicture || "/default-avatar.png"}
+                    alt={r.user_id?.full_name || "User"}
+                    className="w-10 h-10 rounded-full object-cover border"
+                  />
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold">{r.user_id?.full_name || "User"}</span>
+                      <span className="text-yellow-500">
+                        {"★".repeat(r.rating) + "☆".repeat(5 - r.rating)}
+                      </span>
+                    </div>
+                    <div className="text-gray-700">{r.comment}</div>
+                    <div className="text-xs text-gray-400">
+                      {new Date(r.created_at).toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {reviews.length >= 5 && !showAllReviews && (
+                <button
+                  className="mt-4 text-blue-600 hover:underline"
+                  onClick={() => setShowAllReviews(true)}
+                >
+                  View All Reviews
+                </button>
+              )}
+              {showAllReviews && (
+                <button
+                  className="mt-4 text-blue-600 hover:underline"
+                  onClick={() => setShowAllReviews(false)}
+                >
+                  Show Less
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
