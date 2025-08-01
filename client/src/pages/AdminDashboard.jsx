@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import {
   Users,
   Map,
@@ -9,130 +10,47 @@ import {
   Eye,
   Star,
 } from "lucide-react";
-import { useRef } from "react";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
     totalUsers: 1247,
-    totalTours: 23,
+    totalTours: 0,
     totalBookings: 156,
     totalRevenue: 45600,
   });
-  const [form, setForm] = useState({
-    title: "Demo Tour Title",
-    description: "A wonderful journey through the mountains.",
-    itinerary: "Day 1: Arrival\nDay 2: Hiking\nDay 3: Departure",
-    price: 299,
-    location: "Himalayas",
-    duration_days: 3,
-    is_featured: true,
-    created_by: "demo-admin-id",
-  });
-  const [thumbnail, setThumbnail] = useState(null);
-  const [gallery, setGallery] = useState([]);
-  const [message, setMessage] = useState("");
-  const formRef = useRef();
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
+  const { currentUser } = useSelector((state) => state.user);
+  const navigate = useNavigate();
 
-  const handleThumbnail = (e) => {
-    setThumbnail(e.target.files[0]);
-  };
-
-  const handleGallery = (e) => {
-    setGallery(Array.from(e.target.files));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setMessage("");
-    const formData = new FormData();
-    Object.entries(form).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
-    if (thumbnail) formData.append("thumbnail", thumbnail);
-    gallery.forEach((file) => formData.append("gallery", file));
-    try {
-      const res = await fetch("/api/tours", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      if (data.success) {
-        setMessage("Tour created successfully! Tour ID: " + data.data.id);
-        formRef.current.reset();
-      } else {
-        setMessage("Error: " + (data.message || "Unknown error"));
+  // Fetch real stats
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const toursResponse = await fetch('/api/tours', { credentials: 'include' });
+        const toursData = await toursResponse.json();
+        
+        if (toursData.success) {
+          setStats(prev => ({
+            ...prev,
+            totalTours: toursData.data.length
+          }));
+        }
+      } catch (error) {
+        console.error('Failed to fetch stats:', error);
       }
-    } catch (err) {
-      setMessage("Error: " + err.message);
-    }
-  };
+    };
+
+    fetchStats();
+  }, []);
 
   return (
     <div className="p-6 min-h-screen">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-[#0F172A] mb-2">Dashboard</h1>
+        <h1 className="text-3xl font-bold text-[#0F172A] mb-2">Admin Dashboard</h1>
         <p className="text-[#64748B] text-sm">
-          Welcome back! Here's what's happening with your tours today.
+          Welcome back, {currentUser?.full_name || currentUser?.name || 'Admin'}! Here's what's happening with your tours today.
         </p>
-      </div>
-
-      {/* Create Tour Form */}
-      <div className="bg-white rounded-2xl shadow p-6 mb-8 max-w-2xl">
-        <h2 className="text-xl font-semibold mb-4">Create New Tour (Demo)</h2>
-        <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium">Title</label>
-              <input name="title" type="text" defaultValue={form.title} onChange={handleChange} className="mt-1 block w-full border rounded p-2" required />
-            </div>
-            <div>
-              <label className="block text-sm font-medium">Location</label>
-              <input name="location" type="text" defaultValue={form.location} onChange={handleChange} className="mt-1 block w-full border rounded p-2" required />
-            </div>
-            <div>
-              <label className="block text-sm font-medium">Price</label>
-              <input name="price" type="number" defaultValue={form.price} onChange={handleChange} className="mt-1 block w-full border rounded p-2" required />
-            </div>
-            <div>
-              <label className="block text-sm font-medium">Duration (days)</label>
-              <input name="duration_days" type="number" defaultValue={form.duration_days} onChange={handleChange} className="mt-1 block w-full border rounded p-2" required />
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Description</label>
-            <textarea name="description" defaultValue={form.description} onChange={handleChange} className="mt-1 block w-full border rounded p-2" required />
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Itinerary</label>
-            <textarea name="itinerary" defaultValue={form.itinerary} onChange={handleChange} className="mt-1 block w-full border rounded p-2" />
-          </div>
-          <div className="flex items-center space-x-4">
-            <label className="flex items-center space-x-2">
-              <input name="is_featured" type="checkbox" defaultChecked={form.is_featured} onChange={handleChange} />
-              <span>Featured</span>
-            </label>
-            <input name="created_by" type="hidden" value={form.created_by} />
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Thumbnail Image</label>
-            <input name="thumbnail" type="file" accept="image/*" onChange={handleThumbnail} className="mt-1 block w-full" required />
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Gallery Images</label>
-            <input name="gallery" type="file" accept="image/*" multiple onChange={handleGallery} className="mt-1 block w-full" />
-          </div>
-          <button type="submit" className="bg-[#FF6B47] text-white px-6 py-2 rounded hover:bg-[#FF8B73] transition">Create Tour</button>
-        </form>
-        {message && <div className="mt-4 text-center text-sm text-red-600">{message}</div>}
       </div>
 
       {/* Stats Cards */}
