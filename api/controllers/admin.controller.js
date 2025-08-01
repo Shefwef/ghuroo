@@ -1,40 +1,80 @@
-
-import { auth, db } from "../firebase.js";
-import { UserModel } from "../models/user.model.js";
+import User from '../models/user.model.js';
+import Tour from '../models/tour.model.js';
+import { errorHandler } from '../utils/error.js';
 
 export const adminTest = (req, res) => res.json({ message: "Admin API is working!" });
 
 export const getUsers = async (req, res, next) => {
   try {
-    const users = await UserModel.getAll();
-
-    const formattedUsers = users.map(user => ({
-      id: user.id,
-      full_name: user.full_name,
-      email: user.email,
-      role: user.role,
-      created_at: user.created_at
-    }));
-
-    res.status(200).json(formattedUsers);    
-  } catch (err) {
-    next(err);
+    const users = await User.find({ role: 'user' })
+      .select('-password')
+      .sort({ created_at: -1 });
+    res.json(users);
+  } catch (error) {
+    next(error);
   }
 };
 
-export const deleteUserAsAdmin = async (req, res, next) => {
+export const getAdmins = async (req, res, next) => {
   try {
-    const { userId } = req.params;
-    const user = await UserModel.findById(userId);
+    const admins = await User.find({ role: 'admin' })
+      .select('-password')
+      .sort({ created_at: -1 });
+    res.json(admins);
+  } catch (error) {
+    next(error);
+  }
+};
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+export const updateUser = async (req, res, next) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body },
+      { new: true }
+    ).select('-password');
     
-    await auth.deleteUser(userId);
-    await UserModel.delete(userId);
-    res.status(200).json("User has been deleted by admin");
-  } catch (err) {
-    next(err);
+    if (!user) return next(errorHandler(404, 'User not found'));
+    res.json(user);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteUser = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return next(errorHandler(404, 'User not found'));
+
+    await Tour.deleteMany({ created_by: user._id });
+    await User.findByIdAndDelete(req.params.id);
+    
+    res.json({ message: 'User and associated tours deleted successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getDashboardStats = async (req, res, next) => {
+  try {
+    const [userCount, tourCount, adminCount] = await Promise.all([
+      User.countDocuments({ role: 'user' }),
+      Tour.countDocuments(),
+      User.countDocuments({ role: 'admin' })
+    ]);
+
+    const recentTours = await Tour.find()
+      .populate('created_by', 'full_name')
+      .sort({ created_at: -1 })
+      .limit(5);
+
+    res.json({
+      userCount,
+      tourCount,
+      adminCount,
+      recentTours
+    });
+  } catch (error) {
+    next(error);
   }
 };
