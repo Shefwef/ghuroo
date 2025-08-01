@@ -20,6 +20,7 @@ export default function AdminDashboard() {
   });
 
   const { currentUser } = useSelector((state) => state.user);
+  console.log(currentUser);
   const navigate = useNavigate();
 
   // Fetch real stats
@@ -28,13 +29,48 @@ export default function AdminDashboard() {
       try {
         const toursResponse = await fetch('/api/tours', { credentials: 'include' });
         const toursData = await toursResponse.json();
-        
+
         if (toursData.success) {
           setStats(prev => ({
             ...prev,
             totalTours: toursData.data.length
           }));
         }
+
+        const bookingsResponse = await fetch('/api/bookings', { credentials: 'include' });
+        const bookingsData = await bookingsResponse.json();
+      
+        
+        if (bookingsData.success) {
+          setStats(prev => ({
+            ...prev,
+            totalBookings: bookingsData.data.length
+          }));
+        }
+
+        const usersResponse = await fetch("/api/admin/users", {
+          credentials: "include",
+        });        
+        const usersData = await usersResponse.json();
+        
+        if (usersData) {
+          setStats(prev => ({
+            ...prev,
+            totalUsers: usersData.length
+          }));
+        }
+
+        const revenueResponse = await fetch('/api/bookings/revenue', { credentials: 'include' });
+        const revenueData = await revenueResponse.json();
+
+        if (revenueData.success) {
+          setStats(prev => ({
+            ...prev,
+            totalRevenue: revenueData.totalRevenue
+          }));
+        }
+
+
       } catch (error) {
         console.error('Failed to fetch stats:', error);
       }
@@ -49,7 +85,7 @@ export default function AdminDashboard() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-[#0F172A] mb-2">Admin Dashboard</h1>
         <p className="text-[#64748B] text-sm">
-          Welcome back, {currentUser?.full_name || currentUser?.name || 'Admin'}! Here's what's happening with your tours today.
+          Welcome back, {currentUser?.full_name || currentUser?.username || 'Admin'}! Here's what's happening with your tours today.
         </p>
       </div>
 

@@ -67,6 +67,34 @@ export const getAllBookings = async (req, res) => {
   }
 };
 
+export const getRevenues = async (req, res) => {
+  try {
+    const result = await Booking.aggregate([
+      { $match: { status: 'confirmed' } },
+      {
+        $group: {
+          _id: null,
+          totalRevenue: { $sum: '$total_price' }
+        }
+      }
+    ]);
+
+    const totalRevenue = result.length > 0 ? result[0].totalRevenue : 0;
+
+    return res.status(200).json({
+      success: true,
+      totalRevenue
+    });
+    
+  } catch (err) {
+    console.error('Error calculating revenue:', err);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to calculate revenue',
+    });
+  }
+};
+
 export const updateBookingStatus = async (req, res) => {
   try {
     const { id } = req.params;
