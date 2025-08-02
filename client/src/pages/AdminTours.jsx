@@ -6,6 +6,8 @@ export default function AdminTours() {
   const [tours, setTours] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editingTour, setEditingTour] = useState(null);
   
   const { currentUser } = useSelector((state) => state.user);
   
@@ -80,6 +82,7 @@ export default function AdminTours() {
     setThumbnail(null);
     setGallery([]);
     setMessage("");
+    setEditingTour(null);
     if (formRef.current) {
       formRef.current.reset();
     }
@@ -184,6 +187,94 @@ export default function AdminTours() {
     } catch (error) {
       alert("Error deleting tour: " + error.message);
     }
+  };
+
+  const handleEditTour = (tour) => {
+    setEditingTour(tour);
+    setForm({
+      title: tour.title,
+      description: tour.description,
+      itinerary: tour.itinerary || "",
+      price: tour.price.toString(),
+      location: tour.location,
+      duration_days: tour.duration_days.toString(),
+      is_featured: tour.is_featured,
+      created_by: tour.created_by
+    });
+    setThumbnail(null);
+    setGallery([]);
+    setMessage("");
+    setShowEditForm(true);
+  };
+
+  const handleUpdateTour = async (e) => {
+    e.preventDefault();
+    setMessage("");
+    setFormLoading(true);
+
+    const formData = new FormData();
+    
+    // Add form fields
+    Object.entries(form).forEach(([key, value]) => {
+      if (value !== null && value !== undefined && value !== "") {
+        formData.append(key, value);
+      }
+    });
+
+    // Add thumbnail if selected
+    if (thumbnail) {
+      formData.append("thumbnail", thumbnail);
+    }
+
+    // Add gallery images if selected
+    if (gallery.length > 0) {
+      gallery.forEach((file) => {
+        formData.append("gallery", file);
+      });
+    }
+
+    try {
+      console.log('Updating tour...');
+      
+      const headers = {};
+      if (currentUser?.token) {
+        headers.Authorization = `Bearer ${currentUser.token}`;
+      }
+
+      const res = await fetch(`/api/tours/${editingTour._id}`, {
+        method: "PUT",
+        credentials: 'include',
+        headers: headers,
+        body: formData,
+      });
+      
+      const data = await res.json();
+      
+      if (data.success) {
+        setMessage("✅ Tour updated successfully!");
+        fetchTours(); // Refresh the tours list
+        setTimeout(() => {
+          setShowEditForm(false);
+          setEditingTour(null);
+          resetForm();
+          setMessage("");
+        }, 2000);
+      } else {
+        setMessage("❌ Error: " + (data.message || "Unknown error"));
+      }
+    } catch (err) {
+      console.error('Update error:', err);
+      setMessage("❌ Error: " + err.message);
+    } finally {
+      setFormLoading(false);
+    }
+  };
+
+  const closeEditForm = () => {
+    setShowEditForm(false);
+    setEditingTour(null);
+    resetForm();
+    setMessage("");
   };
 
   if (loading) {
@@ -302,7 +393,10 @@ export default function AdminTours() {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button className="text-[#FF6B47] hover:text-[#E5533A] font-medium transition-colors duration-200 mr-4">
+                      <button 
+                        onClick={() => handleEditTour(tour)}
+                        className="text-[#FF6B47] hover:text-[#E5533A] font-medium transition-colors duration-200 mr-4"
+                      >
                         Edit
                       </button>
                       <button 
@@ -487,6 +581,210 @@ export default function AdminTours() {
                 className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-medium transition-colors"
               >
                 Reset Form
+              </button>
+            </div>
+          </form>
+          
+          {message && (
+            <div className={`mt-4 p-3 rounded-lg text-center text-sm ${
+              message.includes('✅') 
+                ? 'bg-green-100 text-green-700 border border-green-300' 
+                : 'bg-red-100 text-red-700 border border-red-300'
+            }`}>
+              {message}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Edit Tour Form Modal */}
+      {showEditForm && (
+        <div className="bg-white rounded-2xl shadow-lg border border-[#E8EEF7] p-6 mb-8 relative">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold text-[#0F172A]">Edit Tour</h2>
+            <button
+              onClick={closeEditForm}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <X className="h-5 w-5 text-gray-500" />
+            </button>
+          </div>
+
+          <form ref={formRef} onSubmit={handleUpdateTour} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Title *
+                </label>
+                <input 
+                  name="title" 
+                  type="text" 
+                  value={form.title} 
+                  onChange={handleChange} 
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#FF6B47] focus:border-transparent" 
+                  required 
+                  placeholder="Enter tour title"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Location *
+                </label>
+                <input 
+                  name="location" 
+                  type="text" 
+                  value={form.location} 
+                  onChange={handleChange} 
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#FF6B47] focus:border-transparent" 
+                  required 
+                  placeholder="Enter location"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Price ($) *
+                </label>
+                <input 
+                  name="price" 
+                  type="number" 
+                  value={form.price} 
+                  onChange={handleChange} 
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#FF6B47] focus:border-transparent" 
+                  required 
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Duration (days) *
+                </label>
+                <input 
+                  name="duration_days" 
+                  type="number" 
+                  value={form.duration_days} 
+                  onChange={handleChange} 
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#FF6B47] focus:border-transparent" 
+                  required 
+                  min="1"
+                  placeholder="1"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Description *
+              </label>
+              <textarea 
+                name="description" 
+                value={form.description} 
+                onChange={handleChange} 
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#FF6B47] focus:border-transparent" 
+                required 
+                rows="3"
+                placeholder="Enter tour description"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Itinerary
+              </label>
+              <textarea 
+                name="itinerary" 
+                value={form.itinerary} 
+                onChange={handleChange} 
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#FF6B47] focus:border-transparent" 
+                rows="4"
+                placeholder="Day 1: Arrival&#10;Day 2: Activities&#10;Day 3: Departure"
+              />
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <label className="flex items-center space-x-2">
+                <input 
+                  name="is_featured" 
+                  type="checkbox" 
+                  checked={form.is_featured} 
+                  onChange={handleChange}
+                  className="rounded border-gray-300 text-[#FF6B47] focus:ring-[#FF6B47]"
+                />
+                <span className="text-sm font-medium text-gray-700">Featured Tour</span>
+              </label>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Thumbnail Image
+                </label>
+                <input 
+                  name="thumbnail" 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={handleThumbnail} 
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#FF6B47] focus:border-transparent" 
+                />
+                <p className="text-xs text-gray-500 mt-1">Leave empty to keep current image</p>
+                {editingTour?.thumbnail_url && (
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-600">Current thumbnail:</p>
+                    <img
+                      src={editingTour.thumbnail_url}
+                      alt="Current thumbnail"
+                      className="w-20 h-20 object-cover rounded"
+                    />
+                  </div>
+                )}
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Gallery Images
+                </label>
+                <input 
+                  name="gallery" 
+                  type="file" 
+                  accept="image/*" 
+                  multiple 
+                  onChange={handleGallery} 
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#FF6B47] focus:border-transparent" 
+                />
+                <p className="text-xs text-gray-500 mt-1">Leave empty to keep current images</p>
+                {editingTour?.gallery_urls && editingTour.gallery_urls.length > 0 && (
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-600">Current gallery images:</p>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {editingTour.gallery_urls.map((url, index) => (
+                        <img
+                          key={index}
+                          src={url}
+                          alt={`Gallery ${index + 1}`}
+                          className="w-16 h-16 object-cover rounded"
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex space-x-4 pt-4">
+              <button 
+                type="submit" 
+                disabled={formLoading}
+                className="bg-gradient-to-r from-[#FF6B47] to-[#FF8B73] hover:from-[#E5533A] hover:to-[#FF6B47] text-white px-6 py-2 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {formLoading ? "Updating..." : "Update Tour"}
+              </button>
+              <button 
+                type="button" 
+                onClick={closeEditForm}
+                className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+              >
+                Cancel
               </button>
             </div>
           </form>
