@@ -1,9 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Hero from "../components/Hero";
 
 export default function Home() {
   const [newsletterSuccess, setNewsletterSuccess] = useState(false);
+  const [featuredTours, setFeaturedTours] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchFeaturedTours();
+  }, []);
+
+  const fetchFeaturedTours = async () => {
+    try {
+      const response = await fetch('/api/tours/featured');
+      const data = await response.json();
+      
+      if (data.success) {
+        setFeaturedTours(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching featured tours:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubscribe = (e) => {
     e.preventDefault();
@@ -58,64 +79,74 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Destinations */}
+      {/* Featured Tours */}
       <section className="py-16 px-4 md:px-8">
         <div className="container mx-auto">
           <h2 className="text-3xl font-extrabold text-gray-800 mb-8 text-center tracking-tight">
-            Featured Destinations
+            Featured Tours
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                title: "Bali, Indonesia",
-                image:
-                  "https://images.unsplash.com/photo-1537996194471-e657df975ab4",
-                description:
-                  "Experience paradise with pristine beaches and rich culture",
-              },
-              {
-                title: "Paris, France",
-                image:
-                  "https://images.unsplash.com/photo-1502602898657-3e91760cbb34",
-                description:
-                  "Discover the city of love and its iconic landmarks",
-              },
-              {
-                title: "Tokyo, Japan",
-                image:
-                  "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf",
-                description:
-                  "Immerse yourself in the perfect blend of tradition and innovation",
-              },
-            ].map((destination, index) => (
-              <div
-                key={index}
-                className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300"
-              >
-                <img
-                  src={destination.image}
-                  alt={destination.title}
-                  className="w-full h-64 object-cover transform group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-6">
-                  <h3 className="text-xl font-bold text-white mb-2 drop-shadow-lg">
-                    {destination.title}
-                  </h3>
-                  <p className="text-gray-200 mb-4">
-                    {destination.description}
-                  </p>
-                  <Link
-                    to={`/destinations/${destination.title
-                      .toLowerCase()
-                      .replace(",", "")}`}
-                    className="inline-block bg-white/90 text-blue-700 px-0.5 py-1 rounded-full font-semibold hover:bg-blue-600 hover:text-white transition-colors shadow text-xs min-w-[60px] text-center"
-                  >
-                    Explore
-                  </Link>
+          
+          {loading ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="text-gray-500">Loading featured tours...</div>
+            </div>
+          ) : featuredTours.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500">No featured tours available</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {featuredTours.slice(0, 3).map((tour) => (
+                <div
+                  key={tour._id}
+                  className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300"
+                >
+                  <img
+                    src={tour.thumbnail_url}
+                    alt={tour.title}
+                    className="w-full h-64 object-cover transform group-hover:scale-110 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-6">
+                    <h3 className="text-xl font-bold text-white mb-2 drop-shadow-lg">
+                      {tour.title}
+                    </h3>
+                    <p className="text-gray-200 mb-2 text-sm overflow-hidden" style={{
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical'
+                    }}>
+                      {tour.description}
+                    </p>
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-white font-semibold">
+                        <span className="text-orange-300">${tour.price}</span>
+                      </span>
+                      <span className="text-gray-300 text-sm">
+                        {tour.duration_days} days
+                      </span>
+                    </div>
+                    <Link
+                      to={`/tours/${tour._id}`}
+                      className="inline-block bg-white/90 text-blue-700 px-4 py-2 rounded-full font-semibold hover:bg-blue-600 hover:text-white transition-colors shadow text-sm text-center"
+                    >
+                      View Details
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
+          
+          {featuredTours.length > 3 && (
+            <div className="text-center mt-8">
+              <Link
+                to="/tours"
+                className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              >
+                View All Tours
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 
