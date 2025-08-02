@@ -126,7 +126,7 @@ export default function Home() {
                       </span>
                     </div>
                     <Link
-                      to={`/tours/${tour._id}`}
+                      to={`/tour/${tour._id}`}
                       className="inline-block bg-white/90 text-blue-700 px-4 py-2 rounded-full font-semibold hover:bg-blue-600 hover:text-white transition-colors shadow text-sm text-center"
                     >
                       View Details
