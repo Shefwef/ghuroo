@@ -9,6 +9,8 @@ import {
   updateUser,
   deleteUser,
   getDashboardStats,
+  getAllBlogsAdmin,
+  deleteBlogAdmin
 } from "../controllers/admin.controller.js";
 
 const router = express.Router();
@@ -20,5 +22,9 @@ router.get("/stats", verifyAdmin, getDashboardStats);
 router.put("/update/:id",verifyAdmin,updateAdmin);
 router.put("/user/:id", verifyAdmin, updateUser);
 router.delete("/user/:id", verifyAdmin, deleteUser);
+
+// Blog management routes
+router.get("/blogs", verifyAdmin, getAllBlogsAdmin);
+router.delete("/blog/:id", verifyAdmin, deleteBlogAdmin);
 
 export default router;

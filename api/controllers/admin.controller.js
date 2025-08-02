@@ -1,5 +1,6 @@
 import User from '../models/user.model.js';
 import Tour from '../models/tour.model.js';
+import Blog from '../models/blog.model.js';
 import { errorHandler } from '../utils/error.js';
 import bcrypt from 'bcryptjs';
 
@@ -58,9 +59,10 @@ export const deleteUser = async (req, res, next) => {
 
 export const getDashboardStats = async (req, res, next) => {
   try {
-    const [userCount, tourCount, adminCount] = await Promise.all([
+    const [userCount, tourCount, blogCount, adminCount] = await Promise.all([
       User.countDocuments({ role: 'user' }),
       Tour.countDocuments(),
+      Blog.countDocuments(),
       User.countDocuments({ role: 'admin' })
     ]);
 
@@ -69,11 +71,18 @@ export const getDashboardStats = async (req, res, next) => {
       .sort({ created_at: -1 })
       .limit(5);
 
+    const recentBlogs = await Blog.find()
+      .populate('user_id', 'full_name')
+      .sort({ created_at: -1 })
+      .limit(5);
+
     res.json({
       userCount,
       tourCount,
+      blogCount,
       adminCount,
-      recentTours
+      recentTours,
+      recentBlogs
     });
   } catch (error) {
     next(error);
@@ -113,6 +122,31 @@ export const updateAdmin = async (req, res, next) => {
       profilePicture: updatedAdmin.profilePicture || null
     });
   } catch (error) {
+    next(error);
+  }
+};
+
+// Blog Management Functions
+export const getAllBlogsAdmin = async (req, res, next) => {
+  try {
+    const blogs = await Blog.find()
+      .populate("user_id", "full_name email profilePicture")
+      .sort({ created_at: -1 });
+    res.json({ success: true, data: blogs });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteBlogAdmin = async (req, res, next) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return next(errorHandler(404, 'Blog not found'));
+
+    await Blog.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'Blog deleted successfully by admin' });
+  } catch (error) {
+    console.error('Admin deleteBlog error:', error);
     next(error);
   }
 };
