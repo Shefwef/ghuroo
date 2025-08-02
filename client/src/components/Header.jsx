@@ -10,7 +10,12 @@ export default function Header() {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
+            <img 
+              src="/src/images/ghuroo-logo.png" 
+              alt="Ghuroo Logo" 
+              className="h-10 w-10 object-contain"
+            />
+            <span className="text-2xl font-bold bg-gradient-to-r from-[#ffb600] to-[#63b1ec] bg-clip-text text-transparent">
               Ghuroo
             </span>
           </Link>
