@@ -1,14 +1,18 @@
 import Tour from '../models/tour.model.js';
 import { errorHandler } from '../utils/error.js';
-import multer from 'multer';
-import { storage } from '../utils/cloudinary.js';
+import { supabaseStorage, uploadToSupabase } from '../utils/supabaseStorage.js';
 
-export const upload = multer({ storage });
+export const upload = supabaseStorage;
 
 
 
 export const createTour = async (req, res, next) => {
     try {
+    console.log('=== createTour START ===');
+    console.log('req.body:', JSON.stringify(req.body, null, 2));
+    console.log('req.files:', req.files);
+    console.log('req.user:', req.user);
+
     const tourData = {
       ...req.body,
       created_by: req.user.id, // Using req.user.id from verifyAdmin middleware
@@ -17,23 +21,42 @@ export const createTour = async (req, res, next) => {
       is_featured: req.body.is_featured === "true" || req.body.is_featured === true
     };
 
-    // Handle file uploads
+    // Handle file uploads to Supabase
     if (req.files) {
+      console.log('Files detected:', Object.keys(req.files));
+      
       if (req.files.thumbnail) {
-        tourData.thumbnail_url = req.files.thumbnail[0].path;
+        console.log('Uploading thumbnail to Supabase...');
+        const thumbnailResult = await uploadToSupabase(req.files.thumbnail[0], 'tours');
+        tourData.thumbnail_url = thumbnailResult.publicUrl;
+        console.log('Thumbnail uploaded:', tourData.thumbnail_url);
       }
+      
       if (req.files.gallery) {
-        tourData.gallery_urls = req.files.gallery.map(file => file.path);
+        console.log('Uploading gallery images to Supabase...');
+        const galleryPromises = req.files.gallery.map(file => uploadToSupabase(file, 'tours'));
+        const galleryResults = await Promise.all(galleryPromises);
+        tourData.gallery_urls = galleryResults.map(result => result.publicUrl);
+        console.log('Gallery uploaded:', tourData.gallery_urls);
       }
+    } else {
+      console.log('No files uploaded');
     }
 
+    console.log('Final tourData:', JSON.stringify(tourData, null, 2));
+
     const newTour = await Tour.create(tourData);
+    
+    console.log('Tour created successfully with ID:', newTour._id);
+    console.log('Saved thumbnail_url:', newTour.thumbnail_url);
+    console.log('Saved gallery_urls:', newTour.gallery_urls);
     
     res.status(201).json({
       success: true,
       data: newTour
     });
   } catch (error) {
+    console.error('createTour error:', error);
     next(error);
   }
 };
@@ -80,11 +103,14 @@ export const updateTour = async (req, res, next) => {
     const updateData = req.body;
     
     if (req.files && req.files['thumbnail']) {
-      updateData.thumbnail_url = req.files['thumbnail'][0].path;
+      const thumbnailResult = await uploadToSupabase(req.files['thumbnail'][0], 'tours');
+      updateData.thumbnail_url = thumbnailResult.publicUrl;
     }
     
     if (req.files && req.files['gallery']) {
-      updateData.gallery_urls = req.files['gallery'].map((file) => file.path);
+      const galleryPromises = req.files['gallery'].map(file => uploadToSupabase(file, 'tours'));
+      const galleryResults = await Promise.all(galleryPromises);
+      updateData.gallery_urls = galleryResults.map(result => result.publicUrl);
     }
     
     if (updateData.price) {

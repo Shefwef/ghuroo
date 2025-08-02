@@ -117,13 +117,32 @@ export default function AdminTours() {
     }
 
     try {
+      console.log('Submitting tour creation...');
+      console.log('Current user:', currentUser);
+      console.log('Form data entries:');
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
+
+      const headers = {
+        // Don't set Content-Type for FormData, let browser set it with boundary
+      };
+
+      // Add authorization header if user has token
+      if (currentUser?.token) {
+        headers.Authorization = `Bearer ${currentUser.token}`;
+      }
+
       const res = await fetch("/api/tours", {
         method: "POST",
         credentials: 'include',
+        headers: headers,
         body: formData,
       });
       
+      console.log('Response status:', res.status);
       const data = await res.json();
+      console.log('Response data:', data);
       
       if (data.success) {
         setMessage("✅ Tour created successfully!");
@@ -137,6 +156,7 @@ export default function AdminTours() {
         setMessage("❌ Error: " + (data.message || "Unknown error"));
       }
     } catch (err) {
+      console.error('Submit error:', err);
       setMessage("❌ Error: " + err.message);
     } finally {
       setFormLoading(false);
