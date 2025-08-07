@@ -23,6 +23,7 @@ import AdminLayout from "./components/AdminLayout";
 import AdminUsers from "./pages/AdminUsers";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import Contact from "./pages/Contact";
+import FAQ from "./pages/FAQ";
 
 export default function App() {
   return (
@@ -59,6 +60,7 @@ export default function App() {
           <Route path="/blogs/:id" element={<BlogDetails />} />
           <Route path="/blogs/write" element={<WriteBlog />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/faq" element={<FAQ />} />
           <Route element={<PrivateRoute />}>
             <Route path="profile" element={<Profile />} />
             <Route path="my-bookings" element={<UserBookings />} />

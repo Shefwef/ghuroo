@@ -10,9 +10,9 @@ export default function Header() {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <img 
-              src="/src/images/ghuroo-logo.png" 
-              alt="Ghuroo Logo" 
+            <img
+              src="/src/images/ghuroo-logo.png"
+              alt="Ghuroo Logo"
               className="h-10 w-10 object-contain"
             />
             <span className="text-2xl font-bold bg-gradient-to-r from-[#ffb600] to-[#63b1ec] bg-clip-text text-transparent">
@@ -53,14 +53,28 @@ export default function Header() {
               Blogs
             </Link>
             {currentUser && (
-              <Link to="/my-bookings" className="text-gray-600 hover:text-blue-600 transition-colors">
+              <Link
+                to="/my-bookings"
+                className="text-gray-600 hover:text-blue-600 transition-colors"
+              >
                 My Bookings
               </Link>
-              
             )}
             {currentUser && (
-              <Link to="/my-blogs" className="text-gray-600 hover:text-blue-600 transition-colors">
+              <Link
+                to="/my-blogs"
+                className="text-gray-600 hover:text-blue-600 transition-colors"
+              >
                 My Blogs
+              </Link>
+            )}
+
+            {currentUser && (
+              <Link
+                to="/faq"
+                className="text-gray-600 hover:text-blue-600 transition-colors"
+              >
+                FAQ
               </Link>
             )}
           </nav>
