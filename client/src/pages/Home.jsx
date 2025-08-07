@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Hero from "../components/Hero";
+import toast from "react-hot-toast";
 
 export default function Home() {
   const [newsletterSuccess, setNewsletterSuccess] = useState(false);
@@ -13,14 +14,18 @@ export default function Home() {
 
   const fetchFeaturedTours = async () => {
     try {
-      const response = await fetch('/api/tours/featured');
+      const response = await fetch("/api/tours/featured");
       const data = await response.json();
-      
+
       if (data.success) {
         setFeaturedTours(data.data);
+        toast.success("Featured tours loaded!");
+      } else {
+        toast.error(data.message || "Failed to load featured tours.");
       }
     } catch (error) {
-      console.error('Error fetching featured tours:', error);
+      console.error("Error fetching featured tours:", error);
+      toast.error("Error fetching featured tours.");
     } finally {
       setLoading(false);
     }
@@ -29,6 +34,7 @@ export default function Home() {
   const handleSubscribe = (e) => {
     e.preventDefault();
     setNewsletterSuccess(true);
+    toast.success("Subscribed to newsletter!");
     setTimeout(() => setNewsletterSuccess(false), 3000);
   };
 
@@ -85,7 +91,7 @@ export default function Home() {
           <h2 className="text-3xl font-extrabold text-gray-800 mb-8 text-center tracking-tight">
             Featured Tours
           </h2>
-          
+
           {loading ? (
             <div className="flex justify-center items-center py-12">
               <div className="text-gray-500">Loading featured tours...</div>
@@ -110,11 +116,14 @@ export default function Home() {
                     <h3 className="text-xl font-bold text-white mb-2 drop-shadow-lg">
                       {tour.title}
                     </h3>
-                    <p className="text-gray-200 mb-2 text-sm overflow-hidden" style={{
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical'
-                    }}>
+                    <p
+                      className="text-gray-200 mb-2 text-sm overflow-hidden"
+                      style={{
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                      }}
+                    >
                       {tour.description}
                     </p>
                     <div className="flex items-center justify-between mb-4">
@@ -136,7 +145,7 @@ export default function Home() {
               ))}
             </div>
           )}
-          
+
           {featuredTours.length > 3 && (
             <div className="text-center mt-8">
               <Link
