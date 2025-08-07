@@ -22,6 +22,7 @@ import UserLayout from "./components/UserLayout";
 import AdminLayout from "./components/AdminLayout";
 import AdminUsers from "./pages/AdminUsers";
 import AdminAnalytics from "./pages/AdminAnalytics";
+import Contact from "./pages/Contact";
 
 export default function App() {
   return (
@@ -37,14 +38,14 @@ export default function App() {
             </AdminRoute>
           }
         >
-            <Route path="bookings" element={<AdminBookings />} />
-            <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="tours" element={<AdminTours />} />
-            <Route path="blogs" element={<AdminBlogs />} />
-            <Route path="users" element={<AdminUsers />} />
-            <Route path="analytics" element={<AdminAnalytics />} />
-            <Route path="profile" element={<Profile />}  />
-            <Route path="reviews" element={<AdminReviews />}  />
+          <Route path="bookings" element={<AdminBookings />} />
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="tours" element={<AdminTours />} />
+          <Route path="blogs" element={<AdminBlogs />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="analytics" element={<AdminAnalytics />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="reviews" element={<AdminReviews />} />
         </Route>
 
         {/* User Routes */}
@@ -57,6 +58,7 @@ export default function App() {
           <Route path="/blogs" element={<Blogs />} />
           <Route path="/blogs/:id" element={<BlogDetails />} />
           <Route path="/blogs/write" element={<WriteBlog />} />
+          <Route path="/contact" element={<Contact />} />
           <Route element={<PrivateRoute />}>
             <Route path="profile" element={<Profile />} />
             <Route path="my-bookings" element={<UserBookings />} />
