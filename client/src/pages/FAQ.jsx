@@ -25,45 +25,51 @@ const faqs = [
     question: "How do I pay for my booking?",
     answer: "We accept all major credit cards and secure online payments.",
   },
+  {
+    question: "What safety measures are in place for tours?",
+    answer:
+      "All tours follow strict safety protocols and our guides are trained to ensure your well-being throughout the journey.",
+  },
+  {
+    question: "Can I get a custom tour package?",
+    answer:
+      "Absolutely! Contact our support team with your preferences and we’ll help you create a personalized tour experience.",
+  },
 ];
 
 export default function FAQ() {
   const [open, setOpen] = useState(null);
 
   return (
-    <div className="min-h-screen bg-white text-black">
-      <div
-        className="relative bg-cover bg-center h-[28rem] flex flex-col justify-center items-center text-center"
-        style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1607083206173-2f79a1d97679?auto=format&fit=crop&w=1470&q=80')",
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-white/40 to-white/0 backdrop-blur-sm z-0" />
-        <h1 className="relative z-10 text-4xl md:text-5xl font-bold drop-shadow-xl text-gray-800">
+    <div
+      className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex flex-col items-center px-2 py-0 relative"
+      style={{
+        backgroundImage:
+          "url('https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1500&q=80')",
+      }}
+    >
+      {/* Overlay for glass effect */}
+      <div className="w-full min-h-screen absolute inset-0 bg-white/70 backdrop-blur-[2px] pointer-events-none -z-10" />
+
+      <div className="w-full max-w-3xl mx-auto pt-16 pb-24">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-center text-gray-900 drop-shadow mb-2 font-sans">
           Frequently Asked Questions
         </h1>
-        <p className="relative z-10 text-lg md:text-xl mt-2 text-gray-700">
+        <p className="text-center text-lg text-gray-700 mb-8 font-sans">
           We’re here to help with any questions you have about tours, bookings,
           and support.
         </p>
-      </div>
-
-      <div className="-mt-16 pt-20 pb-16 bg-white rounded-t-3xl shadow-xl z-10 relative max-w-3xl mx-auto px-4">
         <div className="space-y-6">
           {faqs.map((faq, idx) => (
             <div
               key={idx}
-              className="rounded-xl bg-gradient-to-r from-orange-50 via-white to-orange-50 border border-orange-200 shadow hover:shadow-xl transition-shadow"
+              className="rounded-2xl bg-white/80 backdrop-blur-md border border-orange-100 shadow-lg hover:shadow-2xl transition-shadow"
             >
               <button
-                className={`w-full flex justify-between items-center px-6 py-5 text-lg font-semibold focus:outline-none transition-colors ${
+                className={`w-full flex justify-between items-center px-6 py-5 text-lg font-semibold focus:outline-none transition-colors rounded-2xl ${
                   open === idx
-                    ? "text-orange-600 bg-orange-100"
-                    : "text-orange-700 bg-white"
+                    ? "text-orange-700 bg-gradient-to-r from-orange-100 via-white to-orange-50"
+                    : "text-gray-900 bg-transparent"
                 }`}
                 onClick={() => setOpen(open === idx ? null : idx)}
                 aria-expanded={open === idx}
@@ -97,12 +103,16 @@ export default function FAQ() {
                 }`}
                 style={{
                   background:
-                    open === idx ? "rgba(255, 237, 213, 0.7)" : "transparent",
-                  borderRadius: "0 0 0.75rem 0.75rem",
+                    open === idx
+                      ? "linear-gradient(90deg, #fff7edcc 0%, #ffe0b2cc 100%)"
+                      : "transparent",
+                  borderRadius: "0 0 1rem 1rem",
+                  boxShadow:
+                    open === idx ? "0 4px 24px 0 #ffd699cc" : undefined,
                 }}
               >
                 <div className="overflow-hidden">
-                  <p className="text-orange-700 text-base leading-relaxed">
+                  <p className="text-gray-800 text-base leading-relaxed font-sans">
                     {faq.answer}
                   </p>
                 </div>
