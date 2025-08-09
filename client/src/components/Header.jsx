@@ -34,18 +34,7 @@ export default function Header() {
             >
               Tours
             </Link>
-            <Link
-              to="/about"
-              className="text-gray-600 hover:text-blue-600 transition-colors"
-            >
-              About
-            </Link>
-            <Link
-              to="/contact"
-              className="text-gray-600 hover:text-blue-600 transition-colors"
-            >
-              Contact
-            </Link>
+
             <Link
               to="/blogs"
               className="text-gray-600 hover:text-blue-600 transition-colors"
@@ -68,6 +57,18 @@ export default function Header() {
                 My Blogs
               </Link>
             )}
+            <Link
+              to="/about"
+              className="text-gray-600 hover:text-blue-600 transition-colors"
+            >
+              About
+            </Link>
+            <Link
+              to="/contact"
+              className="text-gray-600 hover:text-blue-600 transition-colors"
+            >
+              Contact
+            </Link>
 
             {currentUser && (
               <Link
