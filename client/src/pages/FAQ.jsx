@@ -45,7 +45,7 @@ export default function FAQ() {
       className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex flex-col items-center px-2 py-0 relative"
       style={{
         backgroundImage:
-          "url('https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1500&q=80')",
+          "url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1500&q=80')",
       }}
     >
       {/* Overlay for glass effect */}
@@ -68,7 +68,7 @@ export default function FAQ() {
               <button
                 className={`w-full flex justify-between items-center px-6 py-5 text-lg font-semibold focus:outline-none transition-colors rounded-2xl ${
                   open === idx
-                    ? "text-orange-700 bg-gradient-to-r from-orange-100 via-white to-orange-50"
+                    ? "text-orange-700 bg-white"
                     : "text-gray-900 bg-transparent"
                 }`}
                 onClick={() => setOpen(open === idx ? null : idx)}
@@ -98,14 +98,11 @@ export default function FAQ() {
                 id={`faq-answer-${idx}`}
                 className={`grid transition-all duration-500 ease-in-out ${
                   open === idx
-                    ? "grid-rows-[1fr] opacity-100 py-4 px-6"
+                    ? "grid-rows-[1fr] opacity-100 py-4 px-6 bg-white"
                     : "grid-rows-[0fr] opacity-0 py-0 px-6"
                 }`}
                 style={{
-                  background:
-                    open === idx
-                      ? "linear-gradient(90deg, #fff7edcc 0%, #ffe0b2cc 100%)"
-                      : "transparent",
+                  background: open === idx ? "white" : "transparent",
                   borderRadius: "0 0 1rem 1rem",
                   boxShadow:
                     open === idx ? "0 4px 24px 0 #ffd699cc" : undefined,

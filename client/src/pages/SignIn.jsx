@@ -1,13 +1,18 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice';
-import OAuth from '../components/OAuth';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from "../redux/user/userSlice";
+import OAuth from "../components/OAuth";
+import toast from "react-hot-toast";
 
 export default function SignIn() {
   const [formData, setFormData] = useState({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -15,7 +20,7 @@ export default function SignIn() {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.id]: e.target.value
+      [e.target.id]: e.target.value,
     });
   };
 
@@ -23,34 +28,59 @@ export default function SignIn() {
     e.preventDefault();
     try {
       dispatch(signInStart());
-      const res = await fetch('/api/auth/signin', {
-        method: 'POST',
+      const res = await fetch("/api/auth/signin", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
-        credentials: 'include'
+        credentials: "include",
       });
-      
+
       const data = await res.json();
       if (!res.ok) {
         dispatch(signInFailure(data.message));
+        toast.error(data.message || "Sign in failed");
         return;
       }
       dispatch(signInSuccess(data));
-      navigate('/');
+      toast.success("Signed in successfully!");
+      navigate("/");
     } catch (error) {
       dispatch(signInFailure(error.message));
+      toast.error(error.message || "Sign in failed");
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-white to-orange-100 py-12 px-4">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
-        <h2 className="text-3xl font-bold text-center text-gray-900">Sign In</h2>
+        {/* Logo and Branding */}
+        <div className="text-center">
+          <div className="flex items-center justify-center space-x-3 mb-4">
+            <img
+              src="/src/images/ghuroo-logo.png"
+              alt="Ghuroo Logo"
+              className="h-12 w-12 object-contain"
+            />
+            <span className="text-3xl font-bold bg-gradient-to-r from-[#ffb600] to-[#63b1ec] bg-clip-text text-transparent">
+              Ghuroo
+            </span>
+          </div>
+          <h2 className="text-3xl font-extrabold text-center text-gray-900 mb-2">
+            Sign In
+          </h2>
+          <p className="text-center text-gray-500 mb-8 text-base">
+           Welcome back! Please sign in to your account.
+          </p>
+        </div>
+
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
               Email
             </label>
             <input
@@ -62,7 +92,10 @@ export default function SignIn() {
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
               Password
             </label>
             <input
@@ -79,13 +112,20 @@ export default function SignIn() {
           >
             Sign In
           </button>
-          <div className="text-sm text-center">
-            <Link to="/signup" className="font-medium text-orange-600 hover:text-orange-500">
-              Do not have an account? Sign Up
-            </Link>
-          </div>
         </form>
+        
+        {/* OAuth Button */}
         <OAuth />
+        
+        {/* Sign Up Link */}
+        <div className="text-sm text-center">
+          <Link
+            to="/signup"
+            className="font-medium text-orange-600 hover:text-orange-500"
+          >
+            Do not have an account? Sign Up
+          </Link>
+        </div>
       </div>
     </div>
   );
