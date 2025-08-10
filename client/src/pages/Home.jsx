@@ -159,35 +159,123 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Call to Action */}
-      <section className="bg-gradient-to-r from-blue-600 to-blue-400 py-12 px-4 md:px-8 flex flex-col items-center justify-center text-center">
-        <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4 drop-shadow-lg">
-          Ready for your next adventure?
-        </h2>
-        <p className="text-blue-100 mb-6 text-lg">
-          Discover amazing destinations and book your dream tour today!
-        </p>
-        <Link
-          to="/tours"
-          className="inline-flex items-center gap-2 bg-white text-blue-700 font-bold px-6 py-2 rounded-full shadow-lg hover:bg-blue-700 hover:text-white transition-colors text-base"
+{/* Popular Destinations */}
+<section className="py-16 px-4 md:px-8 bg-gradient-to-br from-blue-50 to-white">
+  <div className="container mx-auto">
+    <h2 className="text-3xl font-extrabold text-gray-800 mb-12 text-center">
+      Popular Travel Destinations
+    </h2>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {[
+        {
+          name: "Sajek Valley",
+          img: "https://d2u0ktu8omkpf6.cloudfront.net/deab5d531957d73a0057d50d32f3babf269ef1c1fca30044.jpg",
+          desc: "The unique beauty of Sajek Valley with green hills and clouds.",
+        },
+        {
+          name: "Bandarban",
+          img: "https://images.unsplash.com/photo-1717418878623-50e09d80afcd?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fEJhbmRhcmJhbnxlbnwwfHwwfHx8MA%3D%3D",
+          desc: "A land of hills, waterfalls, and indigenous culture.",
+        },
+        {
+          name: "Jaflong",
+          img: "https://www.travelandexplorebd.com/storage/app/public/posts/April2020/41.jpg",
+          desc: "Rivers and serene hills make Jaflong stunning.",
+        },
+        {
+          name: "Cox's Bazar",
+          img: "https://media-cdn.tripadvisor.com/media/photo-s/17/4c/44/75/laboni-beach.jpg",
+          desc: "The world's longest sea beach with crystal blue waters.",
+        },
+        {
+          name: "Srimangal",
+          img: "https://pathfriend-bd.com/wp-content/uploads/2019/08/Tea-Capital-Sylhet-2.gif",
+          desc: "Tea gardens, seven-layer tea, and nature's peaceful beauty.",
+        },
+        {
+          name: "Kuakata",
+          img: "https://images.unsplash.com/photo-1710411592496-e9ee76b47806?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          desc: "A rare place to enjoy both sunrise and sunset over the sea.",
+        },
+      ].map((place, idx) => (
+        <div
+          key={idx}
+          className="group bg-white rounded-xl shadow-md overflow-hidden hover:shadow-2xl transition-all duration-300"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M17 8l4 4m0 0l-4 4m4-4H3"
-            />
-          </svg>
-          Browse Tours
-        </Link>
-      </section>
+          <img
+            src={place.img}
+            alt={place.name}
+            className="h-56 w-full object-cover group-hover:scale-110 transition-transform duration-300"
+          />
+          <div className="p-6">
+            <h3 className="text-xl font-bold text-blue-700 mb-2">{place.name}</h3>
+            <p className="text-gray-600">{place.desc}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+{/* Travelers' Reviews */}
+<section className="py-16 px-4 md:px-8 bg-gradient-to-r from-blue-100 to-blue-200">
+  <div className="container mx-auto">
+    <h2 className="text-3xl font-extrabold text-gray-800 mb-12 text-center">
+      Travelers' Experiences
+    </h2>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {[
+        {
+          name: "Mahmud Hasan",
+          img: "https://randomuser.me/api/portraits/men/30.jpg",
+          review:
+            "The cloud-covered hills of Sajek Valley touched my heart. An unforgettable trip.",
+        },
+        {
+          name: "Sabiha Akter",
+          img: "https://randomuser.me/api/portraits/women/40.jpg",
+          review:
+            "Bandarban's waterfalls and peaceful surroundings amazed me. Highly recommended.",
+        },
+        {
+          name: "Abdul Karim",
+          img: "https://randomuser.me/api/portraits/men/12.jpg",
+          review:
+            "The tea gardens and rivers of Sylhet are breathtaking. I can't wait to return.",
+        },
+      ].map((traveler, idx) => (
+        <div
+          key={idx}
+          className="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-2xl transition-all duration-300"
+        >
+          <img
+            src={traveler.img}
+            alt={traveler.name}
+            className="w-20 h-20 rounded-full mx-auto mb-4 border-4 border-blue-200"
+          />
+          <h3 className="text-lg font-bold text-blue-700 mb-2">{traveler.name}</h3>
+          <p className="text-gray-600 italic">"{traveler.review}"</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+{/* Call to Action */}
+<section className="bg-gradient-to-r from-blue-600 to-blue-400 py-12 px-4 md:px-8 text-center">
+  <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">
+    Ready for Your Next Adventure?
+  </h2>
+  <p className="text-blue-100 mb-6 text-lg">
+    Explore the breathtaking destinations of Bangladesh today!
+  </p>
+  <Link
+    to="/tours"
+    className="inline-flex items-center gap-2 bg-white text-blue-700 font-bold px-6 py-2 rounded-full shadow-lg hover:bg-blue-700 hover:text-white transition-colors text-base"
+  >
+    View Tours
+  </Link>
+</section>
 
       {/* Why Choose Us */}
       <section className="bg-blue-50 py-16 px-4 md:px-8">
@@ -257,20 +345,6 @@ export default function Home() {
               />
             </div>
             <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold flex items-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M16 12H8m8 0a8 8 0 11-16 0 8 8 0 0116 0z"
-                />
-              </svg>
               Subscribe
             </button>
           </form>
