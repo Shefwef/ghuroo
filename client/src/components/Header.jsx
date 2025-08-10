@@ -61,7 +61,7 @@ export default function Header() {
               to="/about"
               className="text-gray-600 hover:text-blue-600 transition-colors"
             >
-              About
+              About Us
             </Link>
             <Link
               to="/contact"
