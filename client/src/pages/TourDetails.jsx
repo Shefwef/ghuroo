@@ -378,87 +378,101 @@ export default function TourDetails() {
           </div>
         </div>
 
-        {/* Reviews Section */}
-        <div className="bg-white rounded-lg shadow-md p-6 mt-8">
-          <h3 className="text-xl font-semibold mb-4">Reviews</h3>
-          <form onSubmit={handleReviewSubmit} className="mb-6">
-            <div className="flex items-center gap-4 mb-2">
-              <label className="font-medium">Your Rating:</label>
-              <select
-                name="rating"
-                value={reviewForm.rating}
-                onChange={handleReviewChange}
-                className="border rounded px-2 py-1"
-                required
-              >
-                {[1,2,3,4,5].map((star) => (
-                  <option key={star} value={star}>{star} Star{star > 1 ? "s" : ""}</option>
-                ))}
-              </select>
-            </div>
-            <textarea
-              name="comment"
-              value={reviewForm.comment}
-              onChange={handleReviewChange}
-              placeholder="Write your comment..."
-              className="w-full border rounded px-3 py-2 mb-2"
-              rows={3}
-            />
-            <button
-              type="submit"
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            >
-              Submit Review
-            </button>
-            {reviewError && <div className="text-red-600 mt-2">{reviewError}</div>}
-            {reviewSuccess && <div className="text-green-600 mt-2">{reviewSuccess}</div>}
-          </form>
+{/* Reviews Section */}
+<div className="bg-white rounded-lg shadow-md p-6 mt-8">
+  <h3 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">Reviews</h3>
 
-          {/* Reviews List */}
-          {reviews.length === 0 ? (
-            <div className="text-gray-500">No reviews yet.</div>
-          ) : (
-            <div>
-              {reviews.map((r, idx) => (
-                <div key={r._id || idx} className="border-b py-3 flex gap-3 items-start">
-                  <img
-                    src={r.user_id?.profilePicture || "/default-avatar.png"}
-                    alt={r.user_id?.full_name || "User"}
-                    className="w-10 h-10 rounded-full object-cover border"
-                  />
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold">{r.user_id?.full_name || "User"}</span>
-                      <span className="text-yellow-500">
-                        {"★".repeat(r.rating) + "☆".repeat(5 - r.rating)}
-                      </span>
-                    </div>
-                    <div className="text-gray-700">{r.comment}</div>
-                    <div className="text-xs text-gray-400">
-                      {new Date(r.created_at).toLocaleString()}
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {reviews.length >= 5 && !showAllReviews && (
-                <button
-                  className="mt-4 text-blue-600 hover:underline"
-                  onClick={() => setShowAllReviews(true)}
-                >
-                  View All Reviews
-                </button>
-              )}
-              {showAllReviews && (
-                <button
-                  className="mt-4 text-blue-600 hover:underline"
-                  onClick={() => setShowAllReviews(false)}
-                >
-                  Show Less
-                </button>
-              )}
+  {/* Review Form */}
+  <form onSubmit={handleReviewSubmit} className="mb-8 bg-gray-50 p-4 rounded-lg shadow-sm">
+    <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
+      <label className="font-medium text-gray-700">Your Rating:</label>
+      <div className="flex items-center gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <span
+            key={star}
+            onClick={() => setReviewForm({ ...reviewForm, rating: star })}
+            className={`cursor-pointer text-2xl ${
+              star <= reviewForm.rating ? "text-yellow-500" : "text-gray-300"
+            }`}
+          >
+            ★
+          </span>
+        ))}
+      </div>
+    </div>
+
+    <textarea
+      name="comment"
+      value={reviewForm.comment}
+      onChange={handleReviewChange}
+      placeholder="Share your experience..."
+      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 mb-3"
+      rows={4}
+    />
+
+    {reviewError && <div className="text-red-600 mb-2">{reviewError}</div>}
+    {reviewSuccess && <div className="text-green-600 mb-2">{reviewSuccess}</div>}
+
+    <button
+      type="submit"
+      className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-5 py-2 rounded-lg shadow transition-colors"
+    >
+      Submit Review
+    </button>
+  </form>
+
+  {/* Reviews List */}
+  {reviews.length === 0 ? (
+    <div className="text-gray-500 text-sm">No reviews yet. Be the first to leave one!</div>
+  ) : (
+    <div className="space-y-4">
+      {reviews.map((r, idx) => (
+        <div
+          key={r._id || idx}
+          className="flex gap-4 p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition"
+        >
+          <img
+            src={r.user_id?.profilePicture || "/default-avatar.png"}
+            alt={r.user_id?.full_name || "User"}
+            className="w-12 h-12 rounded-full object-cover border shadow"
+          />
+          <div className="flex-1">
+            <div className="flex items-center justify-between">
+              <span className="font-semibold text-gray-800">
+                {r.user_id?.full_name || "User"}
+              </span>
+              <span className="text-yellow-500">
+                {"★".repeat(r.rating) + "☆".repeat(5 - r.rating)}
+              </span>
             </div>
-          )}
+            <p className="text-gray-700 mt-1">{r.comment}</p>
+            <div className="text-xs text-gray-400 mt-1">
+              {new Date(r.created_at).toLocaleDateString()}
+            </div>
+          </div>
         </div>
+      ))}
+
+      {/* Toggle Button */}
+      {reviews.length >= 5 && !showAllReviews && (
+        <button
+          className="mt-4 text-orange-600 hover:underline font-medium"
+          onClick={() => setShowAllReviews(true)}
+        >
+          View All Reviews
+        </button>
+      )}
+      {showAllReviews && (
+        <button
+          className="mt-4 text-orange-600 hover:underline font-medium"
+          onClick={() => setShowAllReviews(false)}
+        >
+          Show Less
+        </button>
+      )}
+    </div>
+  )}
+</div>
       </div>
     </div>
   );
