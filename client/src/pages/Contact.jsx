@@ -51,7 +51,7 @@ export default function Contact() {
             />
             <button
               type="submit"
-              className="mt-2 w-full md:w-auto bg-orange-500 hover:bg-orange-600 text-white font-semibold px-8 py-3 rounded-md shadow transition"
+              className="mt-2 w-full md:w-auto bg-blue-500 hover:bg-blue-600 text-white font-semibold px-8 py-3 rounded-md shadow transition"
             >
               Submit Form
             </button>
