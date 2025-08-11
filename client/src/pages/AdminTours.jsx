@@ -475,6 +475,7 @@ export default function AdminTours() {
                     onSubmit={handleSubmit}
                     className="space-y-6"
                   >
+                    {/* Title & Basic Info */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -536,6 +537,8 @@ export default function AdminTours() {
                         />
                       </div>
                     </div>
+
+                    {/* Description */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Description *
@@ -550,6 +553,8 @@ export default function AdminTours() {
                         placeholder="Enter tour description"
                       />
                     </div>
+
+                    {/* Itinerary */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Itinerary
@@ -563,6 +568,8 @@ export default function AdminTours() {
                         placeholder="Day 1: Arrival&#10;Day 2: Activities&#10;Day 3: Departure"
                       />
                     </div>
+
+                    {/* Featured checkbox */}
                     <div className="flex items-center space-x-4">
                       <label className="flex items-center space-x-2">
                         <input
@@ -577,40 +584,73 @@ export default function AdminTours() {
                         </span>
                       </label>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    {/* Custom Styled Thumbnail */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Thumbnail Image *
+                      </label>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Thumbnail Image *
+                        <label
+                          htmlFor="thumbnail"
+                          className="inline-flex items-center cursor-pointer rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-[#FF6B47] shadow-sm hover:bg-[#FF6B47] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#FF6B47] focus:ring-offset-2 transition"
+                        >
+                          Choose Thumbnail
                         </label>
                         <input
+                          id="thumbnail"
                           name="thumbnail"
                           type="file"
                           accept="image/*"
                           onChange={handleThumbnail}
-                          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#FF6B47] focus:border-transparent"
+                          className="sr-only"
                           required
                         />
                         <p className="text-xs text-gray-500 mt-1">
                           Upload a main image for the tour
                         </p>
+                        {thumbnail && (
+                          <p className="mt-1 text-sm text-gray-700">
+                            Selected file: {thumbnail.name}
+                          </p>
+                        )}
                       </div>
+                    </div>
+
+                    {/* Custom Styled Gallery */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Gallery Images
+                      </label>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Gallery Images
+                        <label
+                          htmlFor="gallery"
+                          className="inline-flex items-center cursor-pointer rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-[#FF6B47] shadow-sm hover:bg-[#FF6B47] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#FF6B47] focus:ring-offset-2 transition"
+                        >
+                          Choose Gallery Images
                         </label>
                         <input
+                          id="gallery"
                           name="gallery"
                           type="file"
                           accept="image/*"
                           multiple
                           onChange={handleGallery}
-                          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#FF6B47] focus:border-transparent"
+                          className="sr-only"
                         />
                         <p className="text-xs text-gray-500 mt-1">
                           Upload additional images (optional)
                         </p>
+                        {gallery.length > 0 && (
+                          <p className="mt-1 text-sm text-gray-700">
+                            Selected {gallery.length} file
+                            {gallery.length > 1 ? "s" : ""}
+                          </p>
+                        )}
                       </div>
                     </div>
+
+                    {/* Buttons */}
                     <div className="flex space-x-4 pt-4">
                       <button
                         type="submit"
