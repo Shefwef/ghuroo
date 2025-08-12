@@ -25,6 +25,8 @@ import AdminAnalytics from "./pages/AdminAnalytics";
 import Contact from "./pages/Contact";
 import FAQ from "./pages/FAQ";
 import AboutUs from "./pages/AboutUs";
+import Destinations from "./pages/Destinations";
+import DestinationDetails from "./pages/DestinationDetails";
 
 export default function App() {
   return (
@@ -63,6 +65,8 @@ export default function App() {
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/faq" element={<FAQ />} />
+          <Route path="/destinations" element={<Destinations />} />
+          <Route path="/destinations/:name" element={<DestinationDetails />} />
           <Route element={<PrivateRoute />}>
             <Route path="profile" element={<Profile />} />
             <Route path="my-bookings" element={<UserBookings />} />

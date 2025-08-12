@@ -198,32 +198,33 @@ export default function Home() {
                 desc: "A rare place to enjoy both sunrise and sunset over the sea.",
               },
             ].map((place, idx) => (
-              <div
+              <Link
                 key={idx}
-                className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300"
+                to={`/destinations/${encodeURIComponent(place.name)}`}
               >
-                <img
-                  src={place.img}
-                  alt={place.name}
-                  className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-6">
-                  <h3 className="text-xl font-bold text-white mb-2 drop-shadow-lg">
-                    {place.name}
-                  </h3>
-                  <p
-                    className="text-gray-200 mb-2 text-sm overflow-hidden"
-                    style={{
-                      display: "-webkit-box",
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: "vertical",
-                    }}
-                  >
-                    {place.desc}
-                  </p>
+                <div className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                  <img
+                    src={place.img}
+                    alt={place.name}
+                    className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-6">
+                    <h3 className="text-xl font-bold text-white mb-2">
+                      {place.name}
+                    </h3>
+                    <p className="text-gray-200 text-sm">{place.desc}</p>
+                  </div>
                 </div>
-              </div>
+              </Link>
             ))}
+          </div>
+          <div className="text-center mt-8">
+            <Link
+              to="/destinations"
+              className="inline-flex items-center gap-2 bg-blue-700 text-white font-bold px-6 py-2 rounded-full shadow-lg hover:bg-blue-200 hover:text-blue-700 transition-colors text-base"
+            >
+              View All Destinations
+            </Link>
           </div>
         </div>
       </section>
