@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 
 export default function AdminDashboard() {
-
   const [stats, setStats] = useState({
     totalUsers: 1247,
     totalTours: 0,
@@ -34,24 +33,27 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const toursResponse = await fetch('/api/tours', { credentials: 'include' });
+        const toursResponse = await fetch("/api/tours", {
+          credentials: "include",
+        });
         const toursData = await toursResponse.json();
 
         if (toursData.success) {
-          setStats(prev => ({
+          setStats((prev) => ({
             ...prev,
-            totalTours: toursData.data.length
+            totalTours: toursData.data.length,
           }));
         }
 
-        const bookingsResponse = await fetch('/api/bookings', { credentials: 'include' });
+        const bookingsResponse = await fetch("/api/bookings", {
+          credentials: "include",
+        });
         const bookingsData = await bookingsResponse.json();
-      
-        
+
         if (bookingsData.success) {
-          setStats(prev => ({
+          setStats((prev) => ({
             ...prev,
-            totalBookings: bookingsData.data.length
+            totalBookings: bookingsData.data.length,
           }));
 
           setBookings(bookingsData.data.slice(0, 2));
@@ -61,29 +63,29 @@ export default function AdminDashboard() {
 
         const usersResponse = await fetch("/api/admin/users", {
           credentials: "include",
-        });        
+        });
         const usersData = await usersResponse.json();
-        
+
         if (usersData) {
-          setStats(prev => ({
+          setStats((prev) => ({
             ...prev,
-            totalUsers: usersData.length
+            totalUsers: usersData.length,
           }));
         }
 
-        const revenueResponse = await fetch('/api/bookings/revenue', { credentials: 'include' });
+        const revenueResponse = await fetch("/api/bookings/revenue", {
+          credentials: "include",
+        });
         const revenueData = await revenueResponse.json();
 
         if (revenueData.success) {
-          setStats(prev => ({
+          setStats((prev) => ({
             ...prev,
-            totalRevenue: revenueData.totalRevenue
+            totalRevenue: revenueData.totalRevenue,
           }));
         }
-
-
       } catch (error) {
-        console.error('Failed to fetch stats:', error);
+        console.error("Failed to fetch stats:", error);
       }
     };
 
@@ -94,9 +96,13 @@ export default function AdminDashboard() {
     <div className="p-6 min-h-screen">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-[#0F172A] mb-2">Admin Dashboard</h1>
+        <h1 className="text-3xl font-bold text-[#0F172A] mb-2">
+          Admin Dashboard
+        </h1>
         <p className="text-[#64748B] text-sm">
-          Welcome back, {currentUser?.full_name || currentUser?.username || 'Admin'}! Here's what's happening with your tours today.
+          Welcome back,{" "}
+          {currentUser?.full_name || currentUser?.username || "Admin"}! Here's
+          what's happening with your tours today.
         </p>
       </div>
 
@@ -230,27 +236,30 @@ export default function AdminDashboard() {
           </h3>
 
           <div className="grid grid-cols-2 gap-4">
-            <button 
-            onClick={() => handleQuickActionsClick("/admin/tours")}
-            className="p-4 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0] hover:bg-[#F1F5F9] hover:border-[#CBD5E1] transition-all duration-300 group">
+            <button
+              onClick={() => handleQuickActionsClick("/admin/tours")}
+              className="p-4 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0] hover:bg-[#F1F5F9] hover:border-[#CBD5E1] transition-all duration-300 group"
+            >
               <div className="w-10 h-10 bg-[#FF6B47] rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                 <Map className="h-5 w-5 text-white" />
               </div>
-              <p className="text-sm font-medium text-[#0F172A]">Add Tour</p>
+              <p className="text-sm font-medium text-[#0F172A]">Manage Tours</p>
             </button>
 
-            <button 
-            onClick={() => handleQuickActionsClick("/admin/users")}
-            className="p-4 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0] hover:bg-[#F1F5F9] hover:border-[#CBD5E1] transition-all duration-300 group">
+            <button
+              onClick={() => handleQuickActionsClick("/admin/users")}
+              className="p-4 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0] hover:bg-[#F1F5F9] hover:border-[#CBD5E1] transition-all duration-300 group"
+            >
               <div className="w-10 h-10 bg-[#4A90E2] rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                 <Users className="h-5 w-5 text-white" />
               </div>
               <p className="text-sm font-medium text-[#0F172A]">Manage Users</p>
             </button>
 
-            <button 
-            onClick={() => handleQuickActionsClick("/admin/bookings")}
-            className="p-4 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0] hover:bg-[#F1F5F9] hover:border-[#CBD5E1] transition-all duration-300 group">
+            <button
+              onClick={() => handleQuickActionsClick("/admin/bookings")}
+              className="p-4 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0] hover:bg-[#F1F5F9] hover:border-[#CBD5E1] transition-all duration-300 group"
+            >
               <div className="w-10 h-10 bg-[#4ECDC4] rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                 <CalendarDays className="h-5 w-5 text-white" />
               </div>
@@ -259,9 +268,10 @@ export default function AdminDashboard() {
               </p>
             </button>
 
-            <button 
-            onClick={() => handleQuickActionsClick("/admin/analytics")}
-            className="p-4 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0] hover:bg-[#F1F5F9] hover:border-[#CBD5E1] transition-all duration-300 group">
+            <button
+              onClick={() => handleQuickActionsClick("/admin/analytics")}
+              className="p-4 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0] hover:bg-[#F1F5F9] hover:border-[#CBD5E1] transition-all duration-300 group"
+            >
               <div className="w-10 h-10 bg-[#9B59B6] rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                 <TrendingUp className="h-5 w-5 text-white" />
               </div>
@@ -278,9 +288,10 @@ export default function AdminDashboard() {
             <h3 className="text-lg font-semibold text-[#0F172A]">
               Recent Bookings
             </h3>
-            <button 
-            onClick={() => handleQuickActionsClick("/admin/bookings")}
-            className="text-[#FF6B47] text-sm font-medium hover:text-[#E5533A] transition-colors">
+            <button
+              onClick={() => handleQuickActionsClick("/admin/bookings")}
+              className="text-[#FF6B47] text-sm font-medium hover:text-[#E5533A] transition-colors"
+            >
               View All
             </button>
           </div>
@@ -298,9 +309,7 @@ export default function AdminDashboard() {
                 >
                   <div className="flex items-center space-x-4">
                     <div className="w-10 h-10 bg-gradient-to-r from-[#FF6B47] to-[#FF8B73] rounded-lg flex items-center justify-center">
-                      <span className="text-white font-bold text-sm">
-                        T
-                      </span>
+                      <span className="text-white font-bold text-sm">T</span>
                     </div>
                     <div>
                       <p className="text-sm font-medium text-[#0F172A]">
@@ -324,7 +333,6 @@ export default function AdminDashboard() {
             )}
           </div>
         </div>
-
       </div>
     </div>
   );
