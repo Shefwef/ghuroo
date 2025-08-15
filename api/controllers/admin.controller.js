@@ -100,8 +100,20 @@ export const updateAdmin = async (req, res, next) => {
 
     const updates = { ...req.body };
 
+    // Map username to full_name for database compatibility
+    if (updates.username) {
+      updates.full_name = updates.username;
+      delete updates.username;
+    }
+
+    // If password is being updated, hash it
     if (updates.password) {
       updates.password = await bcrypt.hash(updates.password, 12);
+    }
+
+    // Remove empty password field if it exists
+    if (updates.password === '') {
+      delete updates.password;
     }
 
     const updatedAdmin = await User.findByIdAndUpdate(
@@ -122,6 +134,7 @@ export const updateAdmin = async (req, res, next) => {
       profilePicture: updatedAdmin.profilePicture || null
     });
   } catch (error) {
+    console.error('Admin update error:', error);
     next(error);
   }
 };

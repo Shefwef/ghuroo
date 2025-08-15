@@ -1,7 +1,6 @@
 import User from "../models/user.model.js";
 import { errorHandler } from "../utils/error.js";
 import bcrypt from "bcryptjs";
-import Notification from "../models/notification.model.js";
 
 export const test = (req, res) => res.json({ message: "API is working!" });
 
@@ -16,8 +15,20 @@ export const updateUser = async (req, res, next) => {
 
     const updates = { ...req.body };
 
+    // Map username to full_name for database compatibility
+    if (updates.username) {
+      updates.full_name = updates.username;
+      delete updates.username;
+    }
+
+    // If password is being updated, hash it
     if (updates.password) {
       updates.password = await bcrypt.hash(updates.password, 12);
+    }
+
+    // Remove empty password field if it exists
+    if (updates.password === '') {
+      delete updates.password;
     }
 
     const updatedUser = await User.findByIdAndUpdate(
@@ -30,24 +41,6 @@ export const updateUser = async (req, res, next) => {
       return next(errorHandler(404, "User not found"));
     }
 
-    // Create notification for admins about the profile update
-    const admins = await User.find({ role: "admin" });
-
-    // Create a notification for each admin
-    const notificationPromises = admins.map((admin) => {
-      const notification = new Notification({
-        recipient_id: admin._id,
-        title: "User Profile Updated",
-        message: `${updatedUser.full_name} has updated their profile.`,
-        type: "profile_update",
-        reference_id: updatedUser._id,
-        reference_model: "User",
-      });
-      return notification.save();
-    });
-
-    await Promise.all(notificationPromises);
-
     res.status(200).json({
       _id: updatedUser._id,
       username: updatedUser.full_name,
@@ -56,6 +49,7 @@ export const updateUser = async (req, res, next) => {
       profilePicture: updatedUser.profilePicture || null,
     });
   } catch (error) {
+    console.error('User update error:', error);
     next(error);
   }
 };
