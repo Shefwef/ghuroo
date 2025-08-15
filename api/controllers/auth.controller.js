@@ -75,6 +75,8 @@ export const signin = async (req, res, next) => {
       email: user.email,
       username: user.full_name,
       role: user.role,
+      role: user.role,
+      profilePicture: user.profilePicture,
     });
   } catch (err) {
     next(err);
@@ -114,6 +116,8 @@ export const google = async (req, res, next) => {
       email: user.email,
       username: user.full_name,
       photo: user.profilePicture,
+      role: user.role,
+      profilePicture: user.profilePicture,
       role: user.role,
     });
   } catch (err) {

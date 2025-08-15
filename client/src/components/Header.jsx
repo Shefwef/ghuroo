@@ -157,7 +157,10 @@ export default function Header() {
 
                 <Link to="/profile" className="flex items-center space-x-2">
                   <img
-                    src={currentUser.profilePicture}
+                    src={
+                      currentUser.profilePicture ||
+                      `https://ui-avatars.com/api/?name=${currentUser.username}&background=3b82f6&color=fff&size=40`
+                    }
                     alt="profile"
                     className="h-10 w-10 rounded-full object-cover border-2 border-blue-500"
                   />

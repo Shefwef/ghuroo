@@ -11,6 +11,7 @@ import adminRoutes from "./routes/admin.route.js";
 import adminAuthRoutes from "./routes/adminAuth.route.js";
 import reviewRoutes from "./routes/review.route.js";
 import notificationRoutes from "./routes/notification.route.js";
+import uploadRoutes from "./routes/upload.route.js";
 import cookieParser from "cookie-parser";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
@@ -54,7 +55,11 @@ app.use("/api/blogs", blogRoutes);
 app.use("/api/blog-comments", blogCommentRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/admin/auth", adminAuthRoutes);
-app.use("/api/notifications", notificationRoutes);
+
+//Catch-all route for client SPA
+// app.get("*", (req, res) => {
+//   res.sendFile(join(__dirname, "client", "dist", "index.html"));
+// });
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(clientDistPath, "index.html"));
