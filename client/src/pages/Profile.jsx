@@ -10,6 +10,7 @@ import {
   signOut,
 } from "../redux/user/userSlice";
 import toast from "react-hot-toast";
+import { useRef } from "react";
 
 export default function Profile() {
   const { currentUser, loading, error } = useSelector((state) => state.user);

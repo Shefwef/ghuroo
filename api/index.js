@@ -55,11 +55,9 @@ app.use("/api/blogs", blogRoutes);
 app.use("/api/blog-comments", blogCommentRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/admin/auth", adminAuthRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/upload", uploadRoutes);
 
-//Catch-all route for client SPA
-// app.get("*", (req, res) => {
-//   res.sendFile(join(__dirname, "client", "dist", "index.html"));
-// });
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(clientDistPath, "index.html"));
