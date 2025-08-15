@@ -1,17 +1,52 @@
 import Review from "../models/review.model.js";
+import User from "../models/user.model.js";
+import Tour from "../models/tour.model.js";
+import Notification from "../models/notification.model.js";
 
 export const createReview = async (req, res) => {
   try {
     const { user_id, tour_id, rating, comment } = req.body;
     if (!user_id || !tour_id || !rating) {
-      return res.status(400).json({ success: false, message: "Missing required fields" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Missing required fields" });
     }
     // Prevent duplicate review per user per tour
     const existing = await Review.findOne({ user_id, tour_id });
     if (existing) {
-      return res.status(400).json({ success: false, message: "You have already reviewed this tour." });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "You have already reviewed this tour.",
+        });
     }
     const review = await Review.create({ user_id, tour_id, rating, comment });
+
+    // Get tour and user details for the notification
+    const [tour, user] = await Promise.all([
+      Tour.findById(tour_id),
+      User.findById(user_id),
+    ]);
+
+    // Create notification for admins
+    const admins = await User.find({ role: "admin" });
+
+    // Create a notification for each admin
+    const notificationPromises = admins.map((admin) => {
+      const notification = new Notification({
+        recipient_id: admin._id,
+        title: "New Review Submitted",
+        message: `${user.full_name} has submitted a ${rating}-star review for ${tour.title}.`,
+        type: "review",
+        reference_id: review._id,
+        reference_model: "Review",
+      });
+      return notification.save();
+    });
+
+    await Promise.all(notificationPromises);
+
     res.status(201).json({ success: true, data: review });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

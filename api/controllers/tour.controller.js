@@ -1,4 +1,6 @@
 import Tour from "../models/tour.model.js";
+import User from "../models/user.model.js";
+import Notification from "../models/notification.model.js";
 import { errorHandler } from "../utils/error.js";
 import { supabaseStorage, uploadToSupabase } from "../utils/supabaseStorage.js";
 
@@ -51,16 +53,36 @@ export const createTour = async (req, res, next) => {
 
     console.log("Final tourData:", JSON.stringify(tourData, null, 2));
 
-    const newTour = await Tour.create(tourData);
+    // Create the tour
+    const newTour = new Tour(tourData);
+    const savedTour = await newTour.save();
 
-    console.log("Tour created successfully with ID:", newTour._id);
-    console.log("Saved thumbnail_url:", newTour.thumbnail_url);
-    console.log("Saved gallery_urls:", newTour.gallery_urls);
+    // Get admin who created the tour
+    const admin = await User.findById(req.user.id);
 
-    res.status(201).json({
-      success: true,
-      data: newTour,
+    // Create notification for other admins
+    const otherAdmins = await User.find({
+      role: "admin",
+      _id: { $ne: req.user.id }, // Exclude the admin who created the tour
     });
+
+    // Create a notification for each admin
+    const notificationPromises = otherAdmins.map((admin) => {
+      const notification = new Notification({
+        recipient_id: admin._id,
+        title: "New Tour Created",
+        message: `${admin.full_name} has created a new tour: ${savedTour.title}.`,
+        type: "tour_creation",
+        reference_id: savedTour._id,
+        reference_model: "Tour",
+      });
+      return notification.save();
+    });
+
+    await Promise.all(notificationPromises);
+
+    console.log("Tour created successfully:", savedTour);
+    res.status(201).json({ success: true, data: savedTour });
   } catch (error) {
     console.error("createTour error:", error);
     next(error);
