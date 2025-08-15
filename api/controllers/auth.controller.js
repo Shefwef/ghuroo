@@ -1,7 +1,7 @@
-import User from '../models/user.model.js';
-import { generateToken } from '../utils/jwt.js';
-import { errorHandler } from '../utils/error.js';
-
+import User from "../models/user.model.js";
+import Notification from "../models/notification.model.js";
+import { generateToken } from "../utils/jwt.js";
+import { errorHandler } from "../utils/error.js";
 
 export const signup = async (req, res, next) => {
   const { username, email, password } = req.body;
@@ -20,15 +20,32 @@ export const signup = async (req, res, next) => {
       full_name: username,
       email,
       password,
-      role: "user"
+      role: "user",
     });
+
+    // Create notification for admins about new user registration
+    const admins = await User.find({ role: "admin" });
+
+    // Create a notification for each admin
+    const notificationPromises = admins.map((admin) => {
+      const notification = new Notification({
+        recipient_id: admin._id,
+        title: "New User Registered",
+        message: `${username} (${email}) has registered a new account.`,
+        type: "user",
+        reference_id: newUser._id,
+        reference_model: "User",
+      });
+      return notification.save();
+    });
+
+    await Promise.all(notificationPromises);
 
     res.status(201).json({ message: "User created successfully" });
   } catch (err) {
     next(err);
   }
 };
-
 
 export const signin = async (req, res, next) => {
   try {
@@ -44,26 +61,25 @@ export const signin = async (req, res, next) => {
       return next(errorHandler(401, "Invalid password"));
     }
 
-    const token = generateToken(user._id, user.role === 'admin');
-    
-    res.cookie('access_token', token, {
+    const token = generateToken(user._id, user.role === "admin");
+
+    res.cookie("access_token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 24 * 60 * 60 * 1000
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 24 * 60 * 60 * 1000,
     });
 
     res.json({
       _id: user._id,
       email: user.email,
       username: user.full_name,
-      role: user.role
+      role: user.role,
     });
   } catch (err) {
     next(err);
   }
 };
-
 
 // Google sign-in
 export const google = async (req, res, next) => {
@@ -80,17 +96,17 @@ export const google = async (req, res, next) => {
         email,
         password: randomPassword,
         profilePicture: photo,
-        role: "user"
+        role: "user",
       });
     }
 
-    const token = generateToken(user._id, user.role === 'admin');
+    const token = generateToken(user._id, user.role === "admin");
 
-    res.cookie('access_token', token, {
+    res.cookie("access_token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 24 * 60 * 60 * 1000
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 24 * 60 * 60 * 1000,
     });
 
     res.status(200).json({
@@ -98,25 +114,24 @@ export const google = async (req, res, next) => {
       email: user.email,
       username: user.full_name,
       photo: user.profilePicture,
-      role: user.role
+      role: user.role,
     });
   } catch (err) {
     next(err);
   }
 };
 
-
 export const signout = (req, res) => {
   try {
-    res.clearCookie('access_token');
+    res.clearCookie("access_token");
     res.status(200).json({
       success: true,
-      message: "Signout successful!"
+      message: "Signout successful!",
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Signout failed"
+      message: "Signout failed",
     });
   }
 };
