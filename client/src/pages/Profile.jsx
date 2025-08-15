@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
   updateUserStart,
   updateUserSuccess,
@@ -9,22 +9,61 @@ import {
   deleteUserFailure,
   signOut
 } from '../redux/user/userSlice';
+import toast from 'react-hot-toast';
 
 export default function Profile() {
   const { currentUser, loading, error } = useSelector((state) => state.user);
   const [formData, setFormData] = useState({});
   const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [imagePercent, setImagePercent] = useState(0);
+  const [imageError, setImageError] = useState(false);
+  const fileRef = useRef(null);
   const dispatch = useDispatch();
 
   useEffect(() => {
     setFormData({
       username: currentUser?.username || '',
       email: currentUser?.email || '',
+      profilePicture: currentUser?.profilePicture || '',
     });
   }, [currentUser]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleFileUpload = async (image) => {
+    if (!image) return;
+    
+    const formData = new FormData();
+    formData.append('profilePicture', image);
+    
+    try {
+      setImagePercent(0);
+      setImageError(false);
+      
+      const res = await fetch('/api/upload/profile-picture', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) {
+        setImageError(true);
+        toast.error(data.message || 'Error uploading image');
+        return;
+      }
+      
+      setFormData({ ...formData, profilePicture: data.url });
+      setImagePercent(100);
+      toast.success('Image uploaded successfully');
+    } catch (error) {
+      setImageError(true);
+      toast.error('Error uploading image');
+      console.error('Upload error:', error);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -101,6 +140,33 @@ export default function Profile() {
     <div className="max-w-lg mx-auto p-3">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <input
+          type="file"
+          ref={fileRef}
+          hidden
+          accept="image/*"
+          onChange={(e) => handleFileUpload(e.target.files[0])}
+        />
+        {/* Profile Picture */}
+        <img
+          src={formData.profilePicture || currentUser.profilePicture || `https://ui-avatars.com/api/?name=${currentUser.username}&background=3b82f6&color=fff&size=128`}
+          alt="profile"
+          className="h-24 w-24 self-center cursor-pointer rounded-full object-cover mt-2"
+          onClick={() => fileRef.current.click()}
+        />
+        <p className="text-sm self-center">
+          {imageError ? (
+            <span className="text-red-700">
+              Error uploading image (file size must be less than 2 MB)
+            </span>
+          ) : imagePercent > 0 && imagePercent < 100 ? (
+            <span className="text-slate-700">{`Uploading: ${imagePercent} %`}</span>
+          ) : imagePercent === 100 ? (
+            <span className="text-green-700">Image uploaded successfully</span>
+          ) : (
+            <span className="text-slate-700">Click image to upload</span>
+          )}
+        </p>
         <input
           type="text"
           id="username"

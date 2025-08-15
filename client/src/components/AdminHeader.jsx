@@ -57,9 +57,17 @@ export default function AdminHeader() {
 
         {/* Admin Profile */}
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-gradient-to-r from-[#FF6B47] to-[#FF8B73] rounded-lg flex items-center justify-center">
-            <User className="h-4 w-4 text-white" />
-          </div>
+          {currentUser?.profilePicture ? (
+            <img
+              src={currentUser.profilePicture}
+              alt="Admin Profile"
+              className="w-8 h-8 rounded-lg object-cover"
+            />
+          ) : (
+            <div className="w-8 h-8 bg-gradient-to-r from-[#FF6B47] to-[#FF8B73] rounded-lg flex items-center justify-center">
+              <User className="h-4 w-4 text-white" />
+            </div>
+          )}
           <div className="hidden md:block">
             <p className="text-sm font-medium text-[#0F172A]">
               {currentUser?.username || 'Admin'}
