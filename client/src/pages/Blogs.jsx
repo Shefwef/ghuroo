@@ -38,7 +38,7 @@ export default function Blogs() {
             to={`/blogs/${blog._id}`}
             className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
           >
-            {/* Thumbnail Image */}
+            
             {blog.thumbnail_url ? (
               <div className="w-full h-48 overflow-hidden bg-gray-200">
                 <img

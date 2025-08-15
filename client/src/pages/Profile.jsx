@@ -59,7 +59,7 @@ export default function Profile() {
       console.log('Form data before update:', formData);
       console.log('Current user:', currentUser);
 
-      // First, upload avatar if there's a new one
+      
       let profilePictureUrl = currentUser?.profilePicture;
       
       if (avatar) {
@@ -85,14 +85,14 @@ export default function Profile() {
         }
       }
 
-      // Now update the user profile with text data and profile picture URL
+      
       const updateData = {
         username: formData.username,
         email: formData.email,
         profilePicture: profilePictureUrl
       };
 
-      // Only include password if it's not empty
+      
       if (formData.password && formData.password.trim() !== '') {
         updateData.password = formData.password;
       }
@@ -132,7 +132,7 @@ export default function Profile() {
 
       dispatch(updateUserSuccess(responseData));
       setUpdateSuccess(true);
-      setAvatar(null); // Clear the avatar state
+      setAvatar(null); 
       toast.success("Profile updated successfully!");
     } catch (error) {
       console.error('Update error:', error);
@@ -375,7 +375,7 @@ export default function Profile() {
         )}
       </div>
 
-      {/* Delete Account Confirmation Modal */}
+      
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full">

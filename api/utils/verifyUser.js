@@ -1,4 +1,4 @@
-// utils/verifyUser.js
+
 import { verifyToken } from "./jwt.js";
 import { errorHandler } from "./error.js";
 

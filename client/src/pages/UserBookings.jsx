@@ -250,7 +250,7 @@ export default function UserBookings() {
                                 className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  // Add cancel booking functionality here
+                                  
                                   toast.info("This feature is coming soon!");
                                 }}
                               >

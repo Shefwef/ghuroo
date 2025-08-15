@@ -29,7 +29,7 @@ export default function AdminTours() {
   const [formLoading, setFormLoading] = useState(false);
   const formRef = useRef();
 
-  // Fetch tours from API
+  
   useEffect(() => {
     fetchTours();
   }, []);
@@ -97,24 +97,24 @@ export default function AdminTours() {
 
     const formData = new FormData();
 
-    // Add form fields
+    
     Object.entries(form).forEach(([key, value]) => {
       if (value !== null && value !== undefined && value !== "") {
         formData.append(key, value);
       }
     });
 
-    // Add current user ID if not already set
+    
     if (!form.created_by && currentUser) {
       formData.append("created_by", currentUser._id || currentUser.id);
     }
 
-    // Add thumbnail
+    
     if (thumbnail) {
       formData.append("thumbnail", thumbnail);
     }
 
-    // Add gallery images
+    
     if (gallery.length > 0) {
       gallery.forEach((file) => {
         formData.append("gallery", file);
@@ -130,10 +130,10 @@ export default function AdminTours() {
       }
 
       const headers = {
-        // Don't set Content-Type for FormData, let browser set it with boundary
+        // "Content-Type": "multipart/form-data",
       };
 
-      // Add authorization header if user has token
+      
       if (currentUser?.token) {
         headers.Authorization = `Bearer ${currentUser.token}`;
       }
@@ -216,19 +216,19 @@ export default function AdminTours() {
 
     const formData = new FormData();
 
-    // Add form fields
+   
     Object.entries(form).forEach(([key, value]) => {
       if (value !== null && value !== undefined && value !== "") {
         formData.append(key, value);
       }
     });
 
-    // Add thumbnail if selected
+   
     if (thumbnail) {
       formData.append("thumbnail", thumbnail);
     }
 
-    // Add gallery images if selected
+   
     if (gallery.length > 0) {
       gallery.forEach((file) => {
         formData.append("gallery", file);
@@ -289,7 +289,7 @@ export default function AdminTours() {
 
   return (
     <div className="p-6">
-      {/* Page Header */}
+     
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-[#0F172A] mb-2">Manage Tours</h1>
         <p className="text-[#64748B] text-sm">
@@ -297,7 +297,7 @@ export default function AdminTours() {
         </p>
       </div>
 
-      {/* Tours Table */}
+     
       <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-[#E8EEF7] overflow-hidden hover:shadow-[0_8px_32px_rgba(0,0,0,0.12)] transition-all duration-300">
         <div className="px-6 py-4 border-b border-[#F1F5F9] bg-[#F8FAFC]">
           <div className="flex items-center justify-between">
@@ -469,13 +469,13 @@ export default function AdminTours() {
                     Create New Tour
                   </Dialog.Title>
 
-                  {/* Your Create Tour Form */}
+                 
                   <form
                     ref={formRef}
                     onSubmit={handleSubmit}
                     className="space-y-6"
                   >
-                    {/* Title & Basic Info */}
+                    
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -538,7 +538,7 @@ export default function AdminTours() {
                       </div>
                     </div>
 
-                    {/* Description */}
+                
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Description *
@@ -569,7 +569,7 @@ export default function AdminTours() {
                       />
                     </div>
 
-                    {/* Featured checkbox */}
+                 
                     <div className="flex items-center space-x-4">
                       <label className="flex items-center space-x-2">
                         <input
@@ -585,7 +585,7 @@ export default function AdminTours() {
                       </label>
                     </div>
 
-                    {/* Custom Styled Thumbnail */}
+                    
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Thumbnail Image *
@@ -617,7 +617,7 @@ export default function AdminTours() {
                       </div>
                     </div>
 
-                    {/* Custom Styled Gallery */}
+                    
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Gallery Images
@@ -650,7 +650,7 @@ export default function AdminTours() {
                       </div>
                     </div>
 
-                    {/* Buttons */}
+                 
                     <div className="flex space-x-4 pt-4">
                       <button
                         type="submit"
@@ -686,7 +686,7 @@ export default function AdminTours() {
         </Dialog>
       </Transition>
 
-      {/* Edit Tour Modal */}
+      
       <Transition appear show={showEditForm} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={closeEditForm}>
           <Transition.Child
@@ -717,7 +717,7 @@ export default function AdminTours() {
                     Edit Tour
                   </Dialog.Title>
 
-                  {/* Your Edit Tour Form */}
+                  
                   <form
                     ref={formRef}
                     onSubmit={handleUpdateTour}
@@ -829,7 +829,7 @@ export default function AdminTours() {
                       </label>
                     </div>
 
-                    {/* Custom Styled Thumbnail Image Input */}
+                 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Thumbnail Image
@@ -872,7 +872,7 @@ export default function AdminTours() {
                       </div>
                     </div>
 
-                    {/* Custom Styled Gallery Images Input */}
+                    
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Gallery Images

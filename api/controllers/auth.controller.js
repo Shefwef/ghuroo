@@ -23,10 +23,10 @@ export const signup = async (req, res, next) => {
       role: "user",
     });
 
-    // Create notification for admins about new user registration
+    
     const admins = await User.find({ role: "admin" });
 
-    // Create a notification for each admin
+    
     const notificationPromises = admins.map((admin) => {
       const notification = new Notification({
         recipient_id: admin._id,
@@ -83,7 +83,7 @@ export const signin = async (req, res, next) => {
   }
 };
 
-// Google sign-in
+
 export const google = async (req, res, next) => {
   try {
     const { email, name, photo } = req.body;
@@ -91,7 +91,7 @@ export const google = async (req, res, next) => {
     let user = await User.findOne({ email });
 
     if (!user) {
-      // Create random password for Google auth users
+      
       const randomPassword = Math.random().toString(36).slice(-8);
       user = await User.create({
         full_name: name,

@@ -11,7 +11,7 @@ export const createReview = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Missing required fields" });
     }
-    // Prevent duplicate review per user per tour
+   
     const existing = await Review.findOne({ user_id, tour_id });
     if (existing) {
       return res
@@ -23,16 +23,16 @@ export const createReview = async (req, res) => {
     }
     const review = await Review.create({ user_id, tour_id, rating, comment });
 
-    // Get tour and user details for the notification
+    
     const [tour, user] = await Promise.all([
       Tour.findById(tour_id),
       User.findById(user_id),
     ]);
 
-    // Create notification for admins
+    
     const admins = await User.find({ role: "admin" });
 
-    // Create a notification for each admin
+    
     const notificationPromises = admins.map((admin) => {
       const notification = new Notification({
         recipient_id: admin._id,

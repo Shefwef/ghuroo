@@ -1,4 +1,4 @@
-// client/src/pages/TourDetails.jsx
+
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -19,7 +19,7 @@ export default function TourDetails() {
   });
   const [totalPrice, setTotalPrice] = useState(0);
 
-  // Review state
+  
   const [reviews, setReviews] = useState([]);
   const [showAllReviews, setShowAllReviews] = useState(false);
   const [reviewForm, setReviewForm] = useState({ rating: 5, comment: "" });
@@ -70,7 +70,7 @@ export default function TourDetails() {
 
   useEffect(() => {
     if (tour) fetchRecentReviews();
-    // eslint-disable-next-line
+    
   }, [showAllReviews]);
 
   const handleInputChange = (e) => {
@@ -92,7 +92,7 @@ export default function TourDetails() {
 
     try {
       const bookingPayload = {
-        user_id: currentUser._id, // Use _id from MongoDB
+        user_id: currentUser._id, 
         tour_id: tour._id,
         booking_date: bookingData.date,
         total_price: totalPrice,

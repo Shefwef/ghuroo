@@ -42,7 +42,7 @@ export default function AdminLogin() {
         return;
       }
 
-      // Store admin user data in Redux
+   
       dispatch(signInSuccess({ ...data, isAdmin: true }));
       navigate("/admin/dashboard");
     } catch (error) {
@@ -54,7 +54,7 @@ export default function AdminLogin() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-white to-orange-100 py-12 px-4 font-sans">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl border border-orange-100 p-8 flex flex-col items-center">
-        {/* Logo or Brand */}
+     
         <img
           src="/src/images/ghuroo-logo.png"
           alt="Ghuroo Logo"

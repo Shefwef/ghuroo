@@ -21,14 +21,14 @@ export default function BlogDetails() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // Fetch blog details
+        
         const blogRes = await fetch(`/api/blogs/${id}`);
         const blogData = await blogRes.json();
         if (!blogRes.ok)
           throw new Error(blogData.message || "Failed to load blog");
         setBlog(blogData.data);
 
-        // Fetch comments
+        
         const commentsRes = await fetch(`/api/blog-comments/blog/${id}`);
         const commentsData = await commentsRes.json();
         if (!commentsRes.ok) throw new Error("Failed to load comments");
@@ -238,13 +238,13 @@ export default function BlogDetails() {
           </div>
         )}
 
-        {/* Blog Content */}
+        
         <div className="p-6 sm:p-8">
           <div className="prose prose-lg max-w-none text-gray-800 mb-8 whitespace-pre-line">
             {blog.content}
           </div>
 
-          {/* Action Buttons */}
+          
           <div className="flex flex-wrap gap-3 mb-8 border-t border-b border-gray-100 py-4">
             <button
               onClick={scrollToComments}
@@ -297,7 +297,7 @@ export default function BlogDetails() {
             </button>
           </div>
 
-          {/* Gallery Images */}
+          
           {blog.gallery_urls && blog.gallery_urls.length > 0 && (
             <div className="mb-8">
               <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
@@ -353,7 +353,7 @@ export default function BlogDetails() {
         </div>
       </div>
 
-      {/* Comments Section */}
+      
       <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8" id="comments">
         <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2">
           <svg
@@ -373,7 +373,7 @@ export default function BlogDetails() {
           Comments ({comments.length})
         </h2>
 
-        {/* Comment Form */}
+       
         <form
           onSubmit={handleCommentSubmit}
           className="mb-8 bg-gray-50 p-4 rounded-lg"
@@ -422,7 +422,7 @@ export default function BlogDetails() {
           )}
         </form>
 
-        {/* Comments List */}
+        
         {comments.length === 0 ? (
           <div className="text-center py-8 bg-gray-50 rounded-lg">
             <svg
@@ -478,7 +478,7 @@ export default function BlogDetails() {
         )}
       </div>
 
-      {/* Image Lightbox */}
+      
       {lightboxOpen && (
         <div
           className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"

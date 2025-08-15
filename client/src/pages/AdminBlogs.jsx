@@ -9,7 +9,7 @@ export default function AdminBlogs() {
   
   const { currentUser } = useSelector((state) => state.user);
 
-  // Fetch blogs from API
+
   useEffect(() => {
     fetchBlogs();
   }, []);
@@ -88,7 +88,7 @@ export default function AdminBlogs() {
         </div>
       )}
 
-      {/* Blogs List */}
+      
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">

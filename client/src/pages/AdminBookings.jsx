@@ -55,7 +55,7 @@ export default function AdminBookings() {
     <div className="p-8 bg-gray-50 min-h-screen">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">📑 All Bookings</h1>
 
-      {/* Filters */}
+     
       <div className="bg-white shadow-lg rounded-xl p-6 mb-6 border border-gray-100">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold text-gray-700">
@@ -99,7 +99,7 @@ export default function AdminBookings() {
         </div>
       </div>
 
-      {/* Table */}
+      
       {loading ? (
         <div className="text-center py-8 text-gray-500">Loading...</div>
       ) : (

@@ -1,4 +1,4 @@
-// client/src/pages/Tours.jsx
+
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
@@ -44,11 +44,7 @@ export default function Tours() {
   };
 
   const handleSearch = async () => {
-    // if (!searchQuery.trim()) {
-    //   fetchTours();
-    //   return;
-    // }
-
+   
     try {
       setLoading(true);
       const response = await fetch(`/api/tours/search/${encodeURIComponent(searchQuery)}`);
@@ -149,9 +145,9 @@ export default function Tours() {
         </div>
       </div>
 
-      {/* Search and Filters Section */}
+      
       <div className="container mx-auto px-6 py-8">
-        {/* Main Search Bar */}
+        
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <div className="flex gap-4 items-end">
             <div className="flex-1">

@@ -8,16 +8,16 @@ export const createBlogComment = async (req, res) => {
     const { blog_id, user_id, comment } = req.body;
     const blogComment = await BlogComment.create({ blog_id, user_id, comment });
 
-    // Get blog and user details for the notification
+    
     const [blog, user] = await Promise.all([
       Blog.findById(blog_id),
       User.findById(user_id),
     ]);
 
-    // Create notification for admins
+    
     const admins = await User.find({ role: "admin" });
 
-    // Create a notification for each admin
+    
     const notificationPromises = admins.map((admin) => {
       const notification = new Notification({
         recipient_id: admin._id,

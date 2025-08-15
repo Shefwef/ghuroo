@@ -6,18 +6,18 @@ export default function AboutUs() {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Background Image */}
+        
         <div className="absolute inset-0">
           <img
             src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80"
             alt="Travel Adventure"
             className="w-full h-full object-cover"
           />
-          {/* Overlay */}
+       
           <div className="absolute inset-0 bg-black bg-opacity-50"></div>
         </div>
         
-        {/* Content */}
+        
         <div className="relative z-10 text-center text-white px-6">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-6xl font-bold mb-6 text-white">
@@ -43,7 +43,7 @@ export default function AboutUs() {
           </div>
         </div>
         
-        {/* Scroll Indicator */}
+    
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
@@ -51,7 +51,7 @@ export default function AboutUs() {
         </div>
       </section>
 
-      {/* Company Introduction & Story */}
+      
       <section className="py-20 bg-white">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto">
@@ -116,7 +116,7 @@ export default function AboutUs() {
               </p>
             </div>
 
-            {/* Social Responsibility */}
+         
             <div className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group">
               <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-6 mx-auto shadow-lg group-hover:scale-110 transition-transform">
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -129,7 +129,7 @@ export default function AboutUs() {
               </p>
             </div>
 
-            {/* Excellence */}
+           
             <div className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group">
               <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-6 mx-auto shadow-lg group-hover:scale-110 transition-transform">
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,7 +145,7 @@ export default function AboutUs() {
         </div>
       </section>
 
-      {/* Team Section */}
+      
       <section className="py-20 bg-white">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
@@ -156,7 +156,7 @@ export default function AboutUs() {
           </div>
 
           <div className="grid md:grid-cols-4 gap-8 max-w-6xl mx-auto">
-            {/* Team Member 1 */}
+           
             <div className="text-center group">
               <div className="w-32 h-32 bg-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                 <span className="text-white text-2xl font-bold">IR</span>
@@ -168,7 +168,7 @@ export default function AboutUs() {
               </p>
             </div>
 
-            {/* Team Member 2 */}
+          
             <div className="text-center group">
               <div className="w-32 h-32 bg-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                 <span className="text-white text-2xl font-bold">NN</span>
@@ -180,7 +180,7 @@ export default function AboutUs() {
               </p>
             </div>
 
-            {/* Team Member 3 */}
+           
             <div className="text-center group">
               <div className="w-32 h-32 bg-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                 <span className="text-white text-2xl font-bold">AA</span>
@@ -192,7 +192,7 @@ export default function AboutUs() {
               </p>
             </div>
 
-            {/* Team Member 4 */}
+          
             <div className="text-center group">
               <div className="w-32 h-32 bg-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                 <span className="text-white text-2xl font-bold">SS</span>
@@ -207,7 +207,7 @@ export default function AboutUs() {
         </div>
       </section>
 
-      {/* Achievements Section */}
+      
       <section className="py-20 bg-blue-600 text-white">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
@@ -306,7 +306,7 @@ export default function AboutUs() {
         </div>
       </section>
 
-      {/* Footer */}
+     
       <footer className="bg-gray-800 text-white py-12 px-4 md:px-8">
         <div className="container mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">

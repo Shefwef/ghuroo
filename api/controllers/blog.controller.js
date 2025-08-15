@@ -20,7 +20,7 @@ export const createBlog = async (req, res, next) => {
         req.body.is_featured === "true" || req.body.is_featured === true,
     };
 
-    // Handle file uploads to Supabase
+    
     if (req.files) {
       if (req.files.thumbnail && req.files.thumbnail[0]) {
         const thumbnailResult = await uploadToSupabase(
@@ -42,13 +42,13 @@ export const createBlog = async (req, res, next) => {
 
     const blog = await Blog.create(blogData);
 
-    // Get user details for the notification
+    
     const user = await User.findById(req.user.id);
 
-    // Create notification for admins
+    
     const admins = await User.find({ role: "admin" });
 
-    // Create a notification for each admin
+    
     const notificationPromises = admins.map((admin) => {
       const notification = new Notification({
         recipient_id: admin._id,

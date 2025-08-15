@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 export default function Hero() {
   return (
     <section className="relative h-screen flex items-center">
-      {/* Background Image with Overlay */}
+      
       <div className="absolute inset-0">
         <img
           src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?ixlib=rb-4.0.3"
@@ -14,7 +14,7 @@ export default function Hero() {
         <div className="absolute inset-0 bg-black bg-opacity-40"></div>
       </div>
 
-      {/* Content */}
+      
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-3xl">
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
@@ -25,7 +25,7 @@ export default function Hero() {
             and experience the world like never before.
           </p>
 
-          {/* Search Bar */}
+          
           <div className="bg-white rounded-lg p-2 flex items-center max-w-2xl">
             <input
               type="text"
@@ -37,7 +37,7 @@ export default function Hero() {
             </button>
           </div>
 
-          {/* Popular Destinations */}
+          
           <div className="mt-12 flex space-x-4">
             <Link
               to="/destinations/beach"

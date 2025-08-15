@@ -21,7 +21,7 @@ export default function AdminHeader() {
   useEffect(() => {
     if (currentUser) {
       fetchUnreadCount();
-      // Set up interval to check for new notifications every minute
+      
       const interval = setInterval(fetchUnreadCount, 60000);
       return () => clearInterval(interval);
     }
@@ -100,9 +100,9 @@ export default function AdminHeader() {
           </ol>
         </nav>
 
-        {/* Right side: Search, Notifications, Profile */}
+        
         <div className="flex items-center space-x-4">
-          {/* Search */}
+          
           <div className="relative">
             <input
               type="text"
@@ -127,7 +127,7 @@ export default function AdminHeader() {
             </div>
           </div>
 
-          {/* Notifications */}
+          
           <div className="relative">
             <button
               onClick={toggleNotifications}
@@ -159,7 +159,7 @@ export default function AdminHeader() {
             />
           </div>
 
-          {/* Profile */}
+          
           <div className="flex items-center space-x-3">
             <div className="flex flex-col items-end">
               <span className="text-sm font-medium text-gray-900">
@@ -178,7 +178,7 @@ export default function AdminHeader() {
             />
           </div>
 
-          {/* View Site (Logout) */}
+          
           <button
             onClick={handleLogout}
             className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"

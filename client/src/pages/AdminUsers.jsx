@@ -10,7 +10,7 @@ import { FaTrashAlt } from "react-icons/fa";
 function DeleteModal({ user, onCancel, onConfirm }) {
   const modalRef = useRef(null);
 
-  // Trap focus inside modal (basic)
+ 
   useEffectReact(() => {
     function handleKeyDown(e) {
       if (e.key === "Escape") onCancel();
@@ -251,7 +251,7 @@ export default function AdminUsers() {
         </div>
       </div>
 
-      {/* Delete Confirmation Modal */}
+      
       {modalUser && (
         <DeleteModal
           user={modalUser}

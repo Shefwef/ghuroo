@@ -94,7 +94,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="p-6 min-h-screen">
-      {/* Header */}
+  
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-[#0F172A] mb-2">
           Admin Dashboard
@@ -106,9 +106,9 @@ export default function AdminDashboard() {
         </p>
       </div>
 
-      {/* Stats Cards */}
+      
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {/* Total Users */}
+       
         <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-[#E8EEF7] p-6 hover:shadow-[0_8px_32px_rgba(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-1">
           <div className="flex items-center justify-between">
             <div>
@@ -125,7 +125,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Total Tours */}
+        
         <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-[#E8EEF7] p-6 hover:shadow-[0_8px_32px_rgba(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-1">
           <div className="flex items-center justify-between">
             <div>
@@ -142,7 +142,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Total Bookings */}
+       
         <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-[#E8EEF7] p-6 hover:shadow-[0_8px_32px_rgba(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-1">
           <div className="flex items-center justify-between">
             <div>
@@ -159,7 +159,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Revenue */}
+
         <div className="bg-gradient-to-r from-[#FF6B47] to-[#FF8B73] rounded-2xl shadow-[0_8px_24px_rgba(255,107,71,0.25)] p-6 hover:shadow-[0_12px_32px_rgba(255,107,71,0.35)] transition-all duration-300 hover:-translate-y-1">
           <div className="flex items-center justify-between">
             <div>
@@ -177,9 +177,9 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Charts Section */}
+ 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Recent Activity */}
+        
         <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-[#E8EEF7] p-6 hover:shadow-[0_8px_32px_rgba(0,0,0,0.12)] transition-all duration-300">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-[#0F172A]">

@@ -15,14 +15,14 @@ export const createTour = async (req, res, next) => {
 
     const tourData = {
       ...req.body,
-      created_by: req.user.id, // Using req.user.id from verifyAdmin middleware
+      created_by: req.user.id, 
       price: Number(req.body.price),
       duration_days: Number(req.body.duration_days),
       is_featured:
         req.body.is_featured === "true" || req.body.is_featured === true,
     };
 
-    // Handle file uploads to Supabase
+    
     if (req.files) {
       console.log("Files detected:", Object.keys(req.files));
 
@@ -53,20 +53,20 @@ export const createTour = async (req, res, next) => {
 
     console.log("Final tourData:", JSON.stringify(tourData, null, 2));
 
-    // Create the tour
+    
     const newTour = new Tour(tourData);
     const savedTour = await newTour.save();
 
-    // Get admin who created the tour
+    
     const admin = await User.findById(req.user.id);
 
-    // Create notification for other admins
+    
     const otherAdmins = await User.find({
       role: "admin",
-      _id: { $ne: req.user.id }, // Exclude the admin who created the tour
+      _id: { $ne: req.user.id }, 
     });
 
-    // Create a notification for each admin
+    
     const notificationPromises = otherAdmins.map((admin) => {
       const notification = new Notification({
         recipient_id: admin._id,
@@ -257,7 +257,7 @@ export const getToursByLocation = async (req, res, next) => {
     }
 
     const tours = await Tour.find({
-      location: { $regex: `^${location}$`, $options: "i" }, // exact match, case-insensitive
+      location: { $regex: `^${location}$`, $options: "i" }, 
     })
       .populate("created_by", "full_name")
       .sort({ created_at: -1 });

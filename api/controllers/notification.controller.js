@@ -1,7 +1,7 @@
 import Notification from "../models/notification.model.js";
 import { errorHandler } from "../utils/error.js";
 
-// Create a new notification
+
 export const createNotification = async (req, res, next) => {
   try {
     const {
@@ -33,7 +33,7 @@ export const createNotification = async (req, res, next) => {
   }
 };
 
-// Get all notifications for an admin
+
 export const getAdminNotifications = async (req, res, next) => {
   try {
     const { adminId } = req.params;
@@ -46,7 +46,7 @@ export const getAdminNotifications = async (req, res, next) => {
   }
 };
 
-// Get unread notifications count for an admin
+
 export const getUnreadCount = async (req, res, next) => {
   try {
     const { adminId } = req.params;
@@ -60,7 +60,7 @@ export const getUnreadCount = async (req, res, next) => {
   }
 };
 
-// Mark a notification as read
+
 export const markAsRead = async (req, res, next) => {
   try {
     const notification = await Notification.findByIdAndUpdate(
@@ -76,7 +76,7 @@ export const markAsRead = async (req, res, next) => {
   }
 };
 
-// Mark all notifications as read for an admin
+
 export const markAllAsRead = async (req, res, next) => {
   try {
     const { adminId } = req.params;
@@ -90,7 +90,7 @@ export const markAllAsRead = async (req, res, next) => {
   }
 };
 
-// Delete a notification
+
 export const deleteNotification = async (req, res, next) => {
   try {
     const notification = await Notification.findByIdAndDelete(req.params.id);
@@ -101,9 +101,7 @@ export const deleteNotification = async (req, res, next) => {
   }
 };
 
-// Add these new functions for user notifications
 
-// Get all notifications for a user
 export const getUserNotifications = async (req, res, next) => {
   try {
     const { userId } = req.params;
@@ -116,7 +114,7 @@ export const getUserNotifications = async (req, res, next) => {
   }
 };
 
-// Get unread notifications count for a user
+
 export const getUserUnreadCount = async (req, res, next) => {
   try {
     const { userId } = req.params;
@@ -130,7 +128,6 @@ export const getUserUnreadCount = async (req, res, next) => {
   }
 };
 
-// Mark all notifications as read for a user
 export const markAllUserNotificationsAsRead = async (req, res, next) => {
   try {
     const { userId } = req.params;

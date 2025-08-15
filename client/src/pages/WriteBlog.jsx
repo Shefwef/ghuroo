@@ -78,18 +78,18 @@ export default function WriteBlog() {
     }
 
     try {
-      // Create FormData for file uploads
+      
       const formData = new FormData();
       formData.append("title", form.title);
       formData.append("content", form.content);
       formData.append("is_featured", form.is_featured);
 
-      // Add thumbnail if selected
+      
       if (thumbnail) {
         formData.append("thumbnail", thumbnail);
       }
 
-      // Add gallery images if selected
+      
       if (gallery.length > 0) {
         gallery.forEach((file) => {
           formData.append("gallery", file);
@@ -121,7 +121,7 @@ export default function WriteBlog() {
     setShowPreview(!showPreview);
   };
 
-  // Auto-resize textarea
+  
   useEffect(() => {
     if (contentRef.current) {
       contentRef.current.style.height = "auto";
@@ -307,7 +307,7 @@ export default function WriteBlog() {
             </div>
           </div>
 
-          {/* Gallery Upload */}
+          
           <div className="mb-6">
             <label className="block text-gray-700 font-medium mb-2">
               Gallery Images (Optional)

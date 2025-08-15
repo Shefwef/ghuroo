@@ -55,7 +55,7 @@ export default function AdminReviews() {
     <div className="p-8 bg-gray-50 min-h-screen">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">📋 All Reviews</h1>
 
-      {/* Filters */}
+   
       <div className="bg-white shadow-lg rounded-xl p-6 mb-6 border border-gray-100">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
@@ -72,7 +72,7 @@ export default function AdminReviews() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Tour Filter */}
+         
           <div>
             <label
               htmlFor="tour"
@@ -96,7 +96,7 @@ export default function AdminReviews() {
             </select>
           </div>
 
-          {/* Rating Filter */}
+         
           <div>
             <label
               htmlFor="rating"
@@ -120,7 +120,7 @@ export default function AdminReviews() {
             </select>
           </div>
 
-          {/* User Filter */}
+        
           <div>
             <label
               htmlFor="user"
@@ -146,7 +146,7 @@ export default function AdminReviews() {
         </div>
       </div>
 
-      {/* Table */}
+     
       {loading ? (
         <div className="text-center py-10 text-gray-500">Loading...</div>
       ) : (

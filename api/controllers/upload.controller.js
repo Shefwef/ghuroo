@@ -7,7 +7,7 @@ export const uploadProfilePicture = async (req, res, next) => {
       return next(errorHandler(400, 'No file uploaded'));
     }
 
-    // Upload to Supabase Storage
+    
     const uploadResult = await uploadToSupabase(req.file, 'profile-pictures');
     
     res.status(200).json({

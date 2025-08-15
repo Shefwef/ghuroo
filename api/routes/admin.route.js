@@ -1,4 +1,4 @@
-// routes/admin.route.js
+
 import express from "express";
 import { verifyAdmin } from "../utils/verifyAdmin.js";
 import {
@@ -23,7 +23,7 @@ router.put("/update/:id",verifyAdmin,updateAdmin);
 router.put("/user/:id", verifyAdmin, updateUser);
 router.delete("/user/:id", verifyAdmin, deleteUser);
 
-// Blog management routes
+
 router.get("/blogs", verifyAdmin, getAllBlogsAdmin);
 router.delete("/blog/:id", verifyAdmin, deleteBlogAdmin);
 

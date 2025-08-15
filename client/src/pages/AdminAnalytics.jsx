@@ -14,7 +14,7 @@ export default function AdminAnalytics() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch analytics data from your backend (implement endpoints as needed)
+   
     const fetchAnalytics = async () => {
       setLoading(true);
       try {
@@ -29,7 +29,7 @@ export default function AdminAnalytics() {
         const bookings = await bookingsRes.json();
         const revenue = await revenueRes.json();
 
-        // Example: group bookings by status for PieChart
+        
         const bookingStatusCounts = {};
         (bookings.data || []).forEach(b => {
           bookingStatusCounts[b.status] = (bookingStatusCounts[b.status] || 0) + 1;
@@ -41,7 +41,7 @@ export default function AdminAnalytics() {
           }))
         );
 
-        // Example: group tours by location for BarChart
+        
         const tourLocationCounts = {};
         (tours.data || []).forEach(t => {
           tourLocationCounts[t.location] = (tourLocationCounts[t.location] || 0) + 1;
@@ -53,7 +53,7 @@ export default function AdminAnalytics() {
           }))
         );
 
-        // Example: users by role for PieChart
+        
         const userRoleCounts = {};
         (users || []).forEach(u => {
           userRoleCounts[u.role] = (userRoleCounts[u.role] || 0) + 1;
@@ -65,7 +65,7 @@ export default function AdminAnalytics() {
           }))
         );
 
-        // Example: revenue
+        
         setRevenueStats([
           { name: "Total Revenue", value: revenue.totalRevenue || 0 },
         ]);
@@ -85,7 +85,7 @@ export default function AdminAnalytics() {
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-8">Analytics</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Users by Role */}
+       
         <div className="bg-white rounded-xl shadow p-6">
           <h2 className="text-lg font-semibold mb-4">Users by Role</h2>
           <ResponsiveContainer width="100%" height={250}>
@@ -109,7 +109,7 @@ export default function AdminAnalytics() {
           </ResponsiveContainer>
         </div>
 
-        {/* Bookings by Status */}
+        
         <div className="bg-white rounded-xl shadow p-6">
           <h2 className="text-lg font-semibold mb-4">Bookings by Status</h2>
           <ResponsiveContainer width="100%" height={250}>
@@ -133,7 +133,7 @@ export default function AdminAnalytics() {
           </ResponsiveContainer>
         </div>
 
-        {/* Tours by Location */}
+        
         <div className="bg-white rounded-xl shadow p-6 col-span-1 md:col-span-2">
           <h2 className="text-lg font-semibold mb-4">Tours by Location</h2>
           <ResponsiveContainer width="100%" height={300}>
@@ -148,7 +148,7 @@ export default function AdminAnalytics() {
           </ResponsiveContainer>
         </div>
 
-        {/* Revenue */}
+       
         <div className="bg-white rounded-xl shadow p-6 col-span-1 md:col-span-2">
           <h2 className="text-lg font-semibold mb-4">Total Revenue</h2>
           <div className="text-3xl font-bold text-[#FF6B47]">

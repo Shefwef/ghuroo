@@ -18,17 +18,17 @@ import { dirname, join } from "path";
 import cors from "cors";
 import path from "path";
 
-// Handle __dirname in ES module scope and configure dotenv
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-dotenv.config(); // Load from current directory (api/.env)
+dotenv.config(); 
 
 const app = express();
 
 const clientDistPath = path.join(__dirname, "..", "client", "dist");
 app.use(express.static(clientDistPath));
 
-// CORS configuration
+
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -36,16 +36,16 @@ app.use(
   })
 );
 
-// Middleware
+
 app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
 
-// Serve uploaded files statically
+
 app.use("/api/uploads", express.static(path.join(__dirname, "uploads")));
 
-// app.use(express.static(join(__dirname, "client", "dist")));
 
-// API routes
+
+
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/tours", tourRoutes);

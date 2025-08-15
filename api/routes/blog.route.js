@@ -14,13 +14,13 @@ import { verifyUser } from "../utils/verifyUser.js";
 
 const router = express.Router();
 
-// Create blog with file uploads
+
 router.post("/", verifyUser, upload.fields([
   { name: 'thumbnail', maxCount: 1 },
   { name: 'gallery', maxCount: 10 }
 ]), createBlog);
 
-// Update blog with file uploads
+
 router.put("/:id", verifyUser, upload.fields([
   { name: 'thumbnail', maxCount: 1 },
   { name: 'gallery', maxCount: 10 }

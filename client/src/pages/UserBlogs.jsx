@@ -9,7 +9,7 @@ export default function UserBlogs() {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [viewMode, setViewMode] = useState("grid"); // grid or table
+  const [viewMode, setViewMode] = useState("grid");
 
   useEffect(() => {
     if (!currentUser?._id) return;

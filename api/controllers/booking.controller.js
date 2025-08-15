@@ -39,16 +39,16 @@ export const createBooking = async (req, res) => {
 
     await booking.save();
 
-    // Get tour and user details for the notification
+    
     const [tour, user] = await Promise.all([
       Tour.findById(tour_id),
       User.findById(user_id),
     ]);
 
-    // Create notification for admins
+    
     const admins = await User.find({ role: "admin" });
 
-    // Create a notification for each admin
+    
     const notificationPromises = admins.map((admin) => {
       const notification = new Notification({
         recipient_id: admin._id,
@@ -146,26 +146,26 @@ export const updateBookingStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    // Find the booking before updating to get the previous status
+    
     const previousBooking = await Booking.findById(id);
 
-    // Update the booking
+    
     const booking = await Booking.findByIdAndUpdate(
       id,
       { status },
       { new: true }
     );
 
-    // Get tour and user details for the notification
+    
     const [tour, user] = await Promise.all([
       Tour.findById(booking.tour_id),
       User.findById(booking.user_id),
     ]);
 
-    // Create notification for admins about the status change
+    
     const admins = await User.find({ role: "admin" });
 
-    // Create a notification for each admin
+    
     const adminNotificationPromises = admins.map((admin) => {
       const notification = new Notification({
         recipient_id: admin._id,
@@ -178,7 +178,7 @@ export const updateBookingStatus = async (req, res) => {
       return notification.save();
     });
 
-    // Also create a notification for the user
+    
     const userNotification = new Notification({
       recipient_id: booking.user_id,
       title: "Booking Status Updated",

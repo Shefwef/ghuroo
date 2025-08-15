@@ -10,7 +10,7 @@ export default function Breadcrumb({ steps = [] }) {
       {/* Steps */}
       {steps.map((step, idx) => (
         <div className="flex items-center" key={step.label || step}>
-          {/* Chevron */}
+          
           <svg
             className="w-4 h-4 mx-2 text-[#BDC3C7]"
             fill="none"
@@ -25,7 +25,7 @@ export default function Breadcrumb({ steps = [] }) {
               d="M9 5l7 7-7 7"
             />
           </svg>
-          {/* Step label */}
+          
           {idx === steps.length - 1 ? (
             <span className="font-semibold text-[#FF6B47]">
               {step.label || step}

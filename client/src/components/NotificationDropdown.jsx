@@ -8,14 +8,14 @@ export default function NotificationDropdown({ isOpen, onClose }) {
   const [loading, setLoading] = useState(true);
   const dropdownRef = useRef(null);
 
-  // Fetch notifications when the dropdown is opened
+  
   useEffect(() => {
     if (isOpen && currentUser) {
       fetchNotifications();
     }
   }, [isOpen, currentUser]);
 
-  // Close dropdown when clicking outside
+  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
