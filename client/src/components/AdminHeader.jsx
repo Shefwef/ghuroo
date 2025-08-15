@@ -48,21 +48,18 @@ export default function AdminHeader() {
     setNotificationOpen(!notificationOpen);
   };
 
-  const handleLogout = async () => {
+  const handleLogout = async() => {
     try {
-      const res = await fetch("/api/admin-auth/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-      const data = await res.json();
-      if (data.success) {
-        dispatch(signOut());
-        navigate("/admin/login");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+          await fetch('/api/auth/signout', {
+            credentials: 'include'
+          });
+          dispatch(signOut());
+          navigate('/');
+        } catch (error) {
+          console.log(error);
+        }
+
+  }
 
   return (
     <header className="bg-white shadow-sm">
