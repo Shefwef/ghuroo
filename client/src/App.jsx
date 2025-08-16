@@ -23,7 +23,6 @@ import AdminLayout from "./components/AdminLayout";
 import AdminUsers from "./pages/AdminUsers";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import Contact from "./pages/Contact";
-import FAQ from "./pages/FAQ";
 import AboutUs from "./pages/AboutUs";
 import Destinations from "./pages/Destinations";
 import DestinationDetails from "./pages/DestinationDetails";
@@ -64,7 +63,6 @@ export default function App() {
           <Route path="/blogs/write" element={<WriteBlog />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/faq" element={<FAQ />} />
           <Route path="/destinations" element={<Destinations />} />
           <Route path="/destinations/:name" element={<DestinationDetails />} />
           <Route element={<PrivateRoute />}>

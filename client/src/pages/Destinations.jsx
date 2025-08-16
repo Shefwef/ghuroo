@@ -53,7 +53,7 @@ export default function Destinations() {
 
   return (
     <div className="min-h-screen relative bg-gradient-to-br from-blue-50 to-white">
-      {/* Background Image */}
+      {/* Background */}
       <div
         className="fixed inset-0 z-0 bg-cover bg-center filter blur-md brightness-75 transition-all duration-500"
         style={{
@@ -63,13 +63,13 @@ export default function Destinations() {
         aria-hidden="true"
       />
 
-      {/* Overlay to soften the blur and improve contrast */}
+      {/* Overlay */}
       <div
         className="fixed inset-0 z-0 bg-blue-900 bg-opacity-40"
         aria-hidden="true"
       />
 
-      {/* Content */}
+      {/* Main Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-16">
         {/* Hero */}
         <div className="mb-12 text-center">
@@ -111,6 +111,7 @@ export default function Destinations() {
           ))}
         </div>
       </div>
+      {/* Here is the footer at the bottom of your page: */}
       <Footer />
     </div>
   );

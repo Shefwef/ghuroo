@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
+import Footer from "../components/Footer";
 
 export default function DestinationDetails() {
   const { name } = useParams();
@@ -134,6 +135,7 @@ export default function DestinationDetails() {
           )}
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
