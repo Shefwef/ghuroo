@@ -41,25 +41,59 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
-      {/* Modern Hero Section */}
-      <section className="relative min-h-[75vh] flex flex-col justify-center items-center text-center overflow-hidden bg-gradient-to-br from-blue-800 via-blue-600 to-blue-400">
-        <img
-          src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1500&q=80"
-          alt="Tropical beach with turquoise water"
-          className="absolute inset-0 w-full h-full object-cover object-center opacity-60"
-          style={{ objectPosition: "center" }}
-        />
-        <div className="relative z-10 max-w-3xl mx-auto px-4 py-20 flex flex-col items-center">
-          <h1 className="text-4xl md:text-6xl font-extrabold text-white drop-shadow-lg mb-4 animate-fade-in">
-            Explore the World with <span className="text-blue-300">Ghuroo</span>
+      <section className="relative min-h-[75vh] flex flex-col justify-center items-center text-center overflow-hidden bg-blue-900">
+        <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
+          <img
+            src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1500&q=80"
+            alt="Tropical beach with turquoise water"
+            className="w-full h-full object-cover object-center opacity-60 scale-110 animate-kenburns"
+            style={{ objectPosition: "center" }}
+          />
+          <div className="absolute inset-0 bg-white/5 backdrop-blur-[2px]" />
+          <svg
+            className="absolute left-10 top-24 w-16 h-16 text-blue-200/60 animate-float-slow"
+            fill="none"
+            viewBox="0 0 64 64"
+          >
+            <circle cx="32" cy="32" r="24" fill="currentColor" />
+          </svg>
+          <svg
+            className="absolute right-10 top-[30%] w-12 h-12 text-blue-300/40 animate-float"
+            fill="none"
+            viewBox="0 0 64 64"
+          >
+            <rect
+              width="40"
+              height="40"
+              x="12"
+              y="12"
+              rx="12"
+              fill="currentColor"
+            />
+          </svg>
+          <svg
+            className="absolute left-[25%] bottom-6 w-10 h-10 text-orange-300/60 animate-float-fast"
+            fill="none"
+            viewBox="0 0 64 64"
+          >
+            <polygon points="32,8 56,56 8,56" fill="currentColor" />
+          </svg>
+        </div>
+
+        <div className="relative z-10 max-w-3xl mx-auto px-4 py-20 flex flex-col items-center animate-fade-in-fast">
+          <h1 className="text-4xl md:text-6xl font-extrabold text-white drop-shadow-lg mb-4">
+            Explore the World with{" "}
+            <span className="relative bg-gradient-to-tr from-blue-500 via-blue-300 to-blue-500 bg-clip-text text-transparent animate-shimmer font-extrabold tracking-tight">
+              Ghuroo
+            </span>
           </h1>
           <p className="text-lg md:text-2xl text-blue-100 mb-8 animate-fade-in-slow">
             Handpicked destinations, seamless booking, and unforgettable
             experiences.
           </p>
-          {/* Search Destination Section */}
+
           <form
-            className="w-full max-w-xl flex bg-white/90 rounded-full shadow-lg overflow-hidden border border-blue-200"
+            className="w-full max-w-xl flex bg-white/80 rounded-full shadow-lg overflow-hidden border border-blue-200 animate-fade-in-slower"
             onSubmit={(e) => {
               e.preventDefault();
               const query = e.target.elements.destination.value.trim();
@@ -72,18 +106,52 @@ export default function Home() {
             <input
               type="text"
               name="destination"
-              className="flex-1 px-6 py-3 text-gray-700 text-base bg-transparent focus:outline-none"
+              className="flex-1 px-6 py-3 text-gray-700 text-base bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-400 transition-shadow"
               placeholder="Search your dream destination..."
               autoComplete="off"
             />
             <button
               type="submit"
-              className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-3 transition-colors text-base"
+              className="bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-300 text-white font-semibold px-6 py-3 shadow-sm transition active:scale-95"
             >
               Search
             </button>
           </form>
         </div>
+
+        <style>
+          {`
+      @keyframes kenburns {
+        0% { transform: scale(1.12); }
+        100% { transform: scale(1);}
+      }
+      .animate-kenburns {
+        animation: kenburns 18s ease-in-out both;
+      }
+      @keyframes float {
+        0%, 100% { transform: translateY(0);}
+        50% { transform: translateY(-16px);}
+      }
+      .animate-float { animation: float 6s ease-in-out infinite; }
+      .animate-float-slow { animation: float 10s ease-in-out infinite; }
+      .animate-float-fast { animation: float 4s ease-in-out infinite; }
+      .animate-shimmer {
+        background-size: 200% auto;
+        animation: shimmer 2.2s linear infinite alternate;
+      }
+      @keyframes shimmer {
+        0% { background-position: 0% 50%; }
+        100% { background-position: 100% 50%; }
+      }
+      .animate-fade-in-fast { animation: fadeIn 1s both; }
+      .animate-fade-in-slow { animation: fadeIn 2s both; }
+      .animate-fade-in-slower { animation: fadeIn 2.7s both; }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(18px);}
+        to { opacity: 1; transform: none;}
+      }
+    `}
+        </style>
       </section>
 
       {/* Featured Tours */}
