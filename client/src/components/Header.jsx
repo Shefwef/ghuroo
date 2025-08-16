@@ -13,7 +13,7 @@ export default function Header() {
   useEffect(() => {
     if (currentUser) {
       fetchUnreadCount();
-      
+
       const interval = setInterval(fetchUnreadCount, 60000);
       return () => clearInterval(interval);
     }
@@ -108,15 +108,6 @@ export default function Header() {
             >
               Contact
             </Link>
-
-            {currentUser && (
-              <Link
-                to="/faq"
-                className="text-gray-600 hover:text-blue-600 transition-colors"
-              >
-                FAQ
-              </Link>
-            )}
           </nav>
 
           {/* Auth Section */}

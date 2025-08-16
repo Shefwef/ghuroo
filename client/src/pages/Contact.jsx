@@ -1,7 +1,17 @@
-import React from "react";
-import { Phone, Mail, MapPin, Clock, MessageCircle, HelpCircle } from "lucide-react";
+import React, { useState } from "react";
+import {
+  Phone,
+  Mail,
+  MapPin,
+  Clock,
+  MessageCircle,
+  HelpCircle,
+} from "lucide-react";
+import Footer from "../components/Footer";
 
 export default function Contact() {
+  const [openFaq, setOpenFaq] = useState(null);
+
   const contactMethods = [
     {
       icon: Phone,
@@ -9,7 +19,7 @@ export default function Contact() {
       description: "Speak directly with our travel experts",
       contact: "+1 (555) 123-4567",
       hours: "Mon-Fri: 9AM-6PM EST",
-      color: "bg-blue-50 text-blue-600"
+      color: "bg-blue-100 text-blue-600",
     },
     {
       icon: Mail,
@@ -17,7 +27,7 @@ export default function Contact() {
       description: "Send us detailed inquiries",
       contact: "support@ghuroo.com",
       hours: "Response within 24 hours",
-      color: "bg-green-50 text-green-600"
+      color: "bg-blue-50 text-blue-500",
     },
     {
       icon: MessageCircle,
@@ -25,79 +35,102 @@ export default function Contact() {
       description: "Get instant help during business hours",
       contact: "Chat Now",
       hours: "Mon-Fri: 9AM-6PM EST",
-      color: "bg-purple-50 text-purple-600"
-    }
+      color: "bg-blue-50 text-blue-400",
+    },
   ];
 
   const contactSteps = [
     {
       step: "1",
       title: "Choose Your Method",
-      description: "Select the contact method that works best for your inquiry - phone for urgent matters, email for detailed questions, or live chat for quick help."
+      description:
+        "Select the contact method that works best for your inquiry: phone for urgent matters, email for detailed questions, or live chat for quick help.",
     },
     {
       step: "2",
       title: "Prepare Your Information",
-      description: "Have your booking reference, travel dates, and specific questions ready to help us assist you more efficiently."
+      description:
+        "Have your booking reference, travel dates, and specific questions ready to help us assist you more efficiently.",
     },
     {
       step: "3",
       title: "Get Expert Assistance",
-      description: "Our experienced travel consultants will provide personalized support and help you plan your perfect trip."
-    }
+      description:
+        "Our experienced travel consultants will provide personalized support and help you plan your perfect trip.",
+    },
   ];
 
-  const faqItems = [
+  // FAQ content
+  const faqs = [
     {
-      question: "What are your business hours?",
-      answer: "We're available Monday through Friday, 9 AM to 6 PM EST. Our live chat and phone support operate during these hours."
+      question: "How do I book a tour?",
+      answer:
+        "Browse our tours, select your favorite, and click 'Book Now'. Fill out the booking form and submit.",
     },
     {
-      question: "How quickly will I receive a response?",
-      answer: "Phone and live chat: Immediate during business hours. Email: Within 24 hours on business days."
+      question: "Can I cancel or reschedule my booking?",
+      answer:
+        "Yes, you can manage your bookings from your profile. Cancellation and rescheduling policies apply.",
     },
     {
-      question: "Can I modify or cancel my booking?",
-      answer: "Yes! Contact us at least 48 hours before your trip for modifications. Cancellation policies vary by tour package."
+      question: "How do I contact support?",
+      answer:
+        "Use our contact form or email us at info@ghuroo.com. We're here to help 24/7.",
     },
     {
-      question: "Do you offer group discounts?",
-      answer: "Absolutely! We offer special rates for groups of 6 or more. Contact us for a custom quote."
-    }
+      question: "Are your tours guided?",
+      answer:
+        "Yes, all tours include expert local guides for a safe and enriching experience.",
+    },
+    {
+      question: "How do I pay for my booking?",
+      answer: "We accept all major credit cards and secure online payments.",
+    },
+    {
+      question: "What safety measures are in place for tours?",
+      answer:
+        "All tours follow strict safety protocols and our guides are trained to ensure your well-being throughout the journey.",
+    },
+    {
+      question: "Can I get a custom tour package?",
+      answer:
+        "Absolutely! Contact our support team with your preferences and we’ll help you create a personalized tour experience.",
+    },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Get in Touch with Us
+    <div className="min-h-screen bg-blue-50 flex flex-col justify-between">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Header */}
+        <div className="text-center mb-14">
+          <h1 className="text-4xl md:text-5xl font-bold text-blue-900 mb-4">
+            Contact Ghuroo
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Need help planning your next adventure? Our travel experts are here to assist you every step of the way.
+          <p className="text-lg text-blue-700 max-w-2xl mx-auto">
+            Need help planning your next adventure? Our friendly travel experts
+            are here for you!
           </p>
         </div>
 
-      
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
+        {/* Contact Methods */}
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8 mb-16">
           {contactMethods.map((method, index) => (
-            <div key={index} className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-              <div className={`inline-flex p-3 rounded-lg ${method.color} mb-4`}>
-                <method.icon className="h-6 w-6" />
+            <div
+              key={index}
+              className={`group bg-white rounded-xl p-8 shadow-md hover:shadow-xl transition-shadow border border-blue-100 hover:-translate-y-2 duration-200`}
+            >
+              <div
+                className={`inline-flex p-3 rounded-lg ${method.color} mb-4 transition-all group-hover:scale-110`}
+              >
+                <method.icon className="h-7 w-7" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <h3 className="text-lg font-semibold text-blue-900 mb-2">
                 {method.title}
               </h3>
-              <p className="text-gray-600 mb-4">
-                {method.description}
-              </p>
+              <p className="text-blue-700 mb-4">{method.description}</p>
               <div className="space-y-2">
-                <p className="font-semibold text-gray-900">
-                  {method.contact}
-                </p>
-                <p className="text-sm text-gray-500 flex items-center">
+                <p className="font-semibold text-blue-900">{method.contact}</p>
+                <p className="text-sm text-blue-500 flex items-center">
                   <Clock className="h-4 w-4 mr-1" />
                   {method.hours}
                 </p>
@@ -106,94 +139,157 @@ export default function Contact() {
           ))}
         </div>
 
-      
+        {/* Contact Steps */}
         <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
+          <h2 className="text-2xl font-bold text-blue-900 mb-8 text-center">
             How to Contact Us
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
             {contactSteps.map((step, index) => (
               <div key={index} className="text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-600 text-white rounded-full text-xl font-bold mb-4">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-600 text-white rounded-full text-xl font-bold mb-4 shadow">
                   {step.step}
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                <h3 className="text-lg font-semibold text-blue-900 mb-2">
                   {step.title}
                 </h3>
-                <p className="text-gray-600">
-                  {step.description}
-                </p>
+                <p className="text-blue-700">{step.description}</p>
               </div>
             ))}
           </div>
         </div>
 
-   
-        <div className="bg-white rounded-xl p-8 shadow-lg mb-16">
-          <div className="grid md:grid-cols-2 gap-8">
+        {/* Office & Emergency */}
+        <div className="bg-white rounded-xl p-8 shadow mb-16 flex flex-col md:flex-row gap-10 items-start">
+          <div className="flex-1">
+            <h3 className="text-xl font-bold text-blue-900 mb-4 flex items-center">
+              <MapPin className="h-6 w-6 mr-2 text-blue-600" />
+              Our Office
+            </h3>
+            <div className="space-y-2 text-blue-700 mb-6">
+              <p className="font-semibold">Ghuroo Travel Company</p>
+              <p>123 Adventure Street, Suite 456</p>
+              <p>Travel City, TC 12345</p>
+              <p>United States</p>
+            </div>
             <div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                <MapPin className="h-6 w-6 mr-2 text-blue-600" />
-                Our Office
-              </h3>
-              <div className="space-y-3 text-gray-600">
-                <p className="font-semibold">Ghuroo Travel Company</p>
-                <p>123 Adventure Street, Suite 456</p>
-                <p>Travel City, TC 12345</p>
-                <p>United States</p>
-              </div>
-              <div className="mt-6">
-                <h4 className="font-semibold text-gray-900 mb-2">Office Hours:</h4>
-                <div className="space-y-1 text-gray-600">
-                  <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
-                  <p>Saturday: 10:00 AM - 4:00 PM</p>
-                  <p>Sunday: Closed</p>
-                </div>
+              <h4 className="font-semibold text-blue-900 mb-2">
+                Office Hours:
+              </h4>
+              <div className="space-y-1 text-blue-700">
+                <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
+                <p>Saturday: 10:00 AM - 4:00 PM</p>
+                <p>Sunday: Closed</p>
               </div>
             </div>
-            <div className="bg-gray-100 rounded-lg p-6">
-              <h4 className="font-semibold text-gray-900 mb-4">Emergency Contact</h4>
-              <p className="text-gray-600 mb-3">
-                For urgent travel emergencies during your trip:
-              </p>
-              <p className="font-semibold text-gray-900">
-                24/7 Emergency Hotline: +1 (555) 999-8888
-              </p>
-              <p className="text-sm text-gray-500 mt-2">
-                This line is for emergencies only during active trips
-              </p>
-            </div>
+          </div>
+          <div className="bg-blue-100 rounded-lg p-6 flex-1 shadow-inner">
+            <h4 className="font-semibold text-blue-900 mb-3 flex items-center">
+              <HelpCircle className="h-5 w-5 mr-2 text-blue-600" />
+              Emergency Contact
+            </h4>
+            <p className="text-blue-700 mb-2">
+              For urgent travel emergencies during your trip:
+            </p>
+            <p className="font-semibold text-blue-900 text-lg">
+              24/7 Emergency Hotline: +1 (555) 999-8888
+            </p>
+            <p className="text-xs text-blue-500 mt-2">
+              This line is for emergencies only during active trips
+            </p>
           </div>
         </div>
 
+        {/* FAQ Accordion Section */}
+        <div className="mb-20 max-w-2xl mx-auto">
+          <h2 className="text-2xl font-bold text-blue-900 mb-8 text-center">
+            Frequently Asked Questions
+          </h2>
+          <div className="space-y-6">
+            {faqs.map((faq, idx) => (
+              <div
+                key={idx}
+                className="rounded-2xl bg-white/90 backdrop-blur-sm border border-blue-100 shadow-lg hover:shadow-2xl transition-shadow"
+              >
+                <button
+                  className={`w-full flex justify-between items-center px-6 py-5 text-lg font-semibold focus:outline-none rounded-2xl transition-colors ${
+                    openFaq === idx
+                      ? "text-blue-700 bg-white"
+                      : "text-blue-900 bg-transparent"
+                  }`}
+                  onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                  aria-expanded={openFaq === idx}
+                  aria-controls={`faq-answer-${idx}`}
+                >
+                  <span>{faq.question}</span>
+                  <span
+                    className={`ml-4 transition-transform duration-300 ${
+                      openFaq === idx
+                        ? "rotate-180 text-blue-500"
+                        : "rotate-0 text-blue-300"
+                    }`}
+                  >
+                    <svg
+                      width="24"
+                      height="24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
+                  </span>
+                </button>
+                <div
+                  id={`faq-answer-${idx}`}
+                  className={`grid transition-all duration-500 ease-in-out ${
+                    openFaq === idx
+                      ? "grid-rows-[1fr] opacity-100 py-4 px-6 bg-white"
+                      : "grid-rows-[0fr] opacity-0 py-0 px-6"
+                  }`}
+                  style={{
+                    background: openFaq === idx ? "white" : "transparent",
+                    borderRadius: "0 0 1rem 1rem",
+                  }}
+                >
+                  <div className="overflow-hidden">
+                    <p className="text-blue-800 text-base leading-relaxed font-sans">
+                      {faq.answer}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
-      
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 text-center text-white">
-          <h2 className="text-3xl font-bold mb-4">
+        {/* Final CTA */}
+        <div className="bg-white border border-blue-100 p-10 rounded-xl text-center mt-16 mb-4 shadow hover:shadow-lg transition">
+          <h2 className="text-2xl font-bold text-blue-900 mb-2">
             Ready to Start Your Adventure?
           </h2>
-          <p className="text-xl mb-6 text-blue-100">
-            Contact us today and let's plan your perfect getaway together!
+          <p className="mb-6 text-blue-700">
+            Contact us now and let's plan your perfect getaway together!
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a 
-              href="tel:+15551234567" 
-              className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors inline-flex items-center justify-center"
+            <a
+              href="tel:+15551234567"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors inline-flex items-center justify-center focus:ring-2 focus:ring-blue-300"
             >
               <Phone className="h-5 w-5 mr-2" />
               Call Now
             </a>
-            <a 
-              href="mailto:support@ghuroo.com" 
-              className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors inline-flex items-center justify-center"
+            <a
+              href="mailto:support@ghuroo.com"
+              className="bg-white border-2 border-blue-600 text-blue-700 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 hover:text-blue-700 transition-colors inline-flex items-center justify-center focus:ring-2 focus:ring-blue-200"
             >
               <Mail className="h-5 w-5 mr-2" />
               Send Email
             </a>
           </div>
         </div>
-
       </div>
+      <Footer />
     </div>
   );
 }
