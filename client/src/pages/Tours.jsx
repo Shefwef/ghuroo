@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Footer from "../components/Footer";
 
 export default function Tours() {
@@ -12,10 +12,18 @@ export default function Tours() {
     duration: "",
   });
   const [searchQuery, setSearchQuery] = useState("");
+  const location = useLocation();
 
   useEffect(() => {
-    fetchTours();
-  }, []);
+    // Check if we have search results from Home page
+    if (location.state?.searchResults) {
+      setTours(location.state.searchResults);
+      setSearchQuery(location.state.searchQuery || "");
+      setLoading(false);
+    } else {
+      fetchTours();
+    }
+  }, [location.state]);
 
   const fetchTours = async () => {
     try {

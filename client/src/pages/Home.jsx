@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Hero from "../components/Hero";
 import toast from "react-hot-toast";
 import Footer from "../components/Footer";
@@ -8,6 +8,7 @@ export default function Home() {
   const [newsletterSuccess, setNewsletterSuccess] = useState(false);
   const [featuredTours, setFeaturedTours] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchFeaturedTours();
@@ -37,6 +38,38 @@ export default function Home() {
     setNewsletterSuccess(true);
     toast.success("Subscribed to newsletter!");
     setTimeout(() => setNewsletterSuccess(false), 3000);
+  };
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    const query = e.target.elements.destination.value.trim();
+
+    if (!query) {
+      toast.error("Please enter a search term");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `/api/tours/search/${encodeURIComponent(query)}`
+      );
+      const data = await response.json();
+
+      if (data.success) {
+        // Navigate to tours page with search results
+        navigate("/tours", {
+          state: {
+            searchResults: data.data,
+            searchQuery: query,
+          },
+        });
+      } else {
+        toast.error(data.message || "No tours found for your search");
+      }
+    } catch (error) {
+      console.error("Error searching tours:", error);
+      toast.error("Error searching tours. Please try again.");
+    }
   };
 
   return (
@@ -94,20 +127,13 @@ export default function Home() {
 
           <form
             className="w-full max-w-xl flex bg-white/80 rounded-full shadow-lg overflow-hidden border border-blue-200 animate-fade-in-slower"
-            onSubmit={(e) => {
-              e.preventDefault();
-              const query = e.target.elements.destination.value.trim();
-              if (query)
-                window.location.href = `/destinations/${encodeURIComponent(
-                  query.toLowerCase()
-                )}`;
-            }}
+            onSubmit={handleSearch}
           >
             <input
               type="text"
               name="destination"
               className="flex-1 px-6 py-3 text-gray-700 text-base bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-400 transition-shadow"
-              placeholder="Search your dream destination..."
+              placeholder="Search tours by destination, title, or description..."
               autoComplete="off"
             />
             <button
