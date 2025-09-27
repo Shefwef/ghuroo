@@ -1,5 +1,6 @@
 # Ghuroo -.-
 
+## Live Link: https://ghuroo.onrender.com/
 ## in the root:
   ```bash
   npm install
