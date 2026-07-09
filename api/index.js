@@ -36,12 +36,23 @@ if (!fs.existsSync(clientDistPath)) {
 
 app.use(express.static(clientDistPath));
 
-// Fixed CORS configuration
+// CORS configuration: the allow-list is environment-driven (ALLOWED_ORIGINS,
+// comma-separated) so new deployment targets (a staging subdomain, a custom
+// domain, a Vercel preview URL) can be added without a code change/redeploy.
+// Falls back to the historical single-origin behaviour when unset, so
+// existing deployments are unaffected. See maintenance/ adaptive case study.
+const defaultOrigins =
+  process.env.NODE_ENV === "production"
+    ? ["https://ghuroo.onrender.com"]
+    : ["http://localhost:5173"];
+
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",").map((origin) => origin.trim())
+  : defaultOrigins;
+
 app.use(
   cors({
-    origin: process.env.NODE_ENV === 'production' 
-      ? ["https://ghuroo.onrender.com"] 
-      : "http://localhost:5173",
+    origin: allowedOrigins,
     credentials: true,
   })
 );

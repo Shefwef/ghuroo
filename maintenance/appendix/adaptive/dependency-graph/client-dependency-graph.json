@@ -1,0 +1,117 @@
+{
+  "App.jsx": [
+    "components/AdminLayout.jsx",
+    "components/AdminRoute.jsx",
+    "components/PrivateRoute.jsx",
+    "components/UserLayout.jsx",
+    "pages/AboutUs.jsx",
+    "pages/AdminAnalytics.jsx",
+    "pages/AdminBlogs.jsx",
+    "pages/AdminBookings.jsx",
+    "pages/AdminDashboard.jsx",
+    "pages/AdminLogin.jsx",
+    "pages/AdminReviews.jsx",
+    "pages/AdminTours.jsx",
+    "pages/AdminUsers.jsx",
+    "pages/BlogDetails.jsx",
+    "pages/Blogs.jsx",
+    "pages/Contact.jsx",
+    "pages/DestinationDetails.jsx",
+    "pages/Destinations.jsx",
+    "pages/Home.jsx",
+    "pages/Profile.jsx",
+    "pages/SignIn.jsx",
+    "pages/SignUp.jsx",
+    "pages/TourDetails.jsx",
+    "pages/Tours.jsx",
+    "pages/UserBlogs.jsx",
+    "pages/UserBookings.jsx",
+    "pages/WriteBlog.jsx"
+  ],
+  "components/AdminHeader.jsx": [
+    "components/NotificationDropdown.jsx",
+    "redux/user/userSlice.js"
+  ],
+  "components/AdminLayout.jsx": [
+    "components/AdminHeader.jsx",
+    "components/AdminSidebar.jsx"
+  ],
+  "components/AdminRoute.jsx": [],
+  "components/AdminSidebar.jsx": [
+    "redux/user/userSlice.js"
+  ],
+  "components/Breadcrumb.jsx": [],
+  "components/Footer.jsx": [],
+  "components/Header.jsx": [
+    "components/UserNotificationDropdown.jsx"
+  ],
+  "components/Hero.jsx": [],
+  "components/NotificationDropdown.jsx": [],
+  "components/OAuth.jsx": [
+    "firebase.js",
+    "redux/user/userSlice.js"
+  ],
+  "components/PrivateRoute.jsx": [],
+  "components/UserLayout.jsx": [
+    "components/Header.jsx"
+  ],
+  "components/UserNotificationDropdown.jsx": [],
+  "firebase.js": [],
+  "index.css": [],
+  "main.jsx": [
+    "App.jsx",
+    "index.css",
+    "redux/store.js"
+  ],
+  "pages/AboutUs.jsx": [
+    "components/Footer.jsx"
+  ],
+  "pages/AdminAnalytics.jsx": [],
+  "pages/AdminBlogs.jsx": [],
+  "pages/AdminBookings.jsx": [],
+  "pages/AdminDashboard.jsx": [],
+  "pages/AdminLogin.jsx": [
+    "redux/user/userSlice.js"
+  ],
+  "pages/AdminReviews.jsx": [],
+  "pages/AdminTours.jsx": [],
+  "pages/AdminUsers.jsx": [],
+  "pages/BlogDetails.jsx": [],
+  "pages/Blogs.jsx": [
+    "components/Footer.jsx"
+  ],
+  "pages/Contact.jsx": [
+    "components/Footer.jsx"
+  ],
+  "pages/DestinationDetails.jsx": [
+    "components/Footer.jsx"
+  ],
+  "pages/Destinations.jsx": [
+    "components/Footer.jsx"
+  ],
+  "pages/Home.jsx": [
+    "components/Footer.jsx",
+    "components/Hero.jsx"
+  ],
+  "pages/Profile.jsx": [
+    "redux/user/userSlice.js"
+  ],
+  "pages/SignIn.jsx": [
+    "components/OAuth.jsx",
+    "redux/user/userSlice.js"
+  ],
+  "pages/SignUp.jsx": [
+    "components/OAuth.jsx"
+  ],
+  "pages/TourDetails.jsx": [],
+  "pages/Tours.jsx": [
+    "components/Footer.jsx"
+  ],
+  "pages/UserBlogs.jsx": [],
+  "pages/UserBookings.jsx": [],
+  "pages/WriteBlog.jsx": [],
+  "redux/store.js": [
+    "redux/user/userSlice.js"
+  ],
+  "redux/user/userSlice.js": []
+}
