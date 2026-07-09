@@ -236,6 +236,35 @@ Removed one stray empty `snakeviz_server.log` file left over from step 5
 
 ### 8. Final commit & merge
 
-See the tail of this log (updated after committing) for the exact commands
-and final `git log` used to commit the adaptive branch and merge both
-branches into `main`.
+Committed the adaptive branch:
+
+```
+git add api/index.js api/.env.example package.json maintenance/
+git commit   # 0a1a026 "feat(api): environment-driven CORS allow-list + Node engines pin"
+```
+
+Merged both branches into `main` (fast-forward, since `main` had not moved
+since the corrective branch was cut from it, and the adaptive branch already
+contains the corrective branch's commits):
+
+```
+git checkout main
+git merge adaptive/env-driven-cors-and-runtime-pinning --ff-only
+```
+
+Result: `Fast-forward`, `main` now at `0a1a026`, working tree clean
+(`git status --short` → no output). Final history:
+
+```
+0a1a026 feat(api): environment-driven CORS allow-list + Node engines pin
+68ea47c chore: track maintenance/ JSON artifacts despite blanket *.json ignore
+e841e93 fix(api): sanitize user input before MongoDB $regex in tour/blog search
+7976560 Updated README.md   <- main before this session
+```
+
+Both feature branches (`corrective/tour-blog-search-regex-sanitization`,
+`adaptive/env-driven-cors-and-runtime-pinning`) were left in place rather
+than deleted, so the per-cycle commit boundaries remain individually
+revertable/auditable even though their content is now also on `main`.
+**Nothing was pushed to any remote** — `main` is only ahead of
+`origin/main` locally; push is left to the user's discretion.
