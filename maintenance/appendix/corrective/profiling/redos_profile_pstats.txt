@@ -1,0 +1,16 @@
+Profiled subject: 'a'*26 + '!'  against pattern '(a+)+$'
+
+Fri Jul 10 00:32:57 2026    D:\Ghuroo\maintenance\appendix\corrective\profiling\redos_profile.prof
+
+         5 function calls in 2.087 seconds
+
+   Ordered by: cumulative time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    2.087    2.087 C:\Users\bashi\AppData\Local\Programs\Python\Python312\Lib\re\__init__.py:164(match)
+        1    2.087    2.087    2.087    2.087 {method 'match' of 're.Pattern' objects}
+        1    0.000    0.000    0.000    0.000 C:\Users\bashi\AppData\Local\Programs\Python\Python312\Lib\re\__init__.py:280(_compile)
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.isinstance}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+

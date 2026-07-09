@@ -1,0 +1,13 @@
+=== BEFORE FIX (api/controllers/tour.controller.js, pre-CM-01) ===
+OK    "Cox's Bazar" -> /Cox's Bazar/i
+OK    "St. John's (old)" -> /St. John's (old)/i
+CRASH "C++ tour" -> SyntaxError: Invalid regular expression: /C++ tour/i: Nothing to repeat
+OK    "[Sale] Sajek" -> /[Sale] Sajek/i
+OK    "tour (a+)+$ deal" -> /tour (a+)+$ deal/i
+
+=== AFTER FIX (escapeRegex applied) ===
+OK    "Cox's Bazar" -> /Cox's Bazar/i
+OK    "St. John's (old)" -> /St\. John's \(old\)/i
+OK    "C++ tour" -> /C\+\+ tour/i
+OK    "[Sale] Sajek" -> /\[Sale\] Sajek/i
+OK    "tour (a+)+$ deal" -> /tour \(a\+\)\+\$ deal/i

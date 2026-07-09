@@ -3,6 +3,7 @@ import User from "../models/user.model.js";
 import Notification from "../models/notification.model.js";
 import { errorHandler } from "../utils/error.js";
 import { supabaseStorage, uploadToSupabase } from "../utils/supabaseStorage.js";
+import { escapeRegex } from "../utils/escapeRegex.js";
 
 export const upload = supabaseStorage;
 
@@ -179,10 +180,11 @@ export const searchBlogs = async (req, res, next) => {
       return next(errorHandler(400, "Search term is required"));
     }
 
+    const safeTerm = escapeRegex(term);
     const searchQuery = {
       $or: [
-        { title: { $regex: term, $options: "i" } },
-        { content: { $regex: term, $options: "i" } },
+        { title: { $regex: safeTerm, $options: "i" } },
+        { content: { $regex: safeTerm, $options: "i" } },
       ],
     };
 
