@@ -26,3 +26,7 @@ dist-ssr
 
 # .gitignore
 *.json
+
+# maintenance/ deliverables intentionally include generated JSON artifacts
+# (AST dumps, dependency graphs, lint reports) - keep those tracked
+!maintenance/**/*.json

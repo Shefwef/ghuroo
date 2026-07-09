@@ -1,0 +1,141 @@
+{
+  "config/db.js": [],
+  "controllers/admin.controller.js": [
+    "models/blog.model.js",
+    "models/tour.model.js",
+    "models/user.model.js",
+    "utils/error.js"
+  ],
+  "controllers/adminAuth.controller.js": [
+    "models/user.model.js",
+    "utils/error.js",
+    "utils/jwt.js"
+  ],
+  "controllers/auth.controller.js": [
+    "models/notification.model.js",
+    "models/user.model.js",
+    "utils/error.js",
+    "utils/jwt.js"
+  ],
+  "controllers/blog.controller.js": [
+    "models/blog.model.js",
+    "models/notification.model.js",
+    "models/user.model.js",
+    "utils/error.js",
+    "utils/escapeRegex.js",
+    "utils/supabaseStorage.js"
+  ],
+  "controllers/blogComment.controller.js": [
+    "models/blog.model.js",
+    "models/blogComment.model.js",
+    "models/notification.model.js",
+    "models/user.model.js"
+  ],
+  "controllers/booking.controller.js": [
+    "models/booking.model.js",
+    "models/notification.model.js",
+    "models/tour.model.js",
+    "models/user.model.js"
+  ],
+  "controllers/notification.controller.js": [
+    "models/notification.model.js",
+    "utils/error.js"
+  ],
+  "controllers/review.controller.js": [
+    "models/notification.model.js",
+    "models/review.model.js",
+    "models/tour.model.js",
+    "models/user.model.js"
+  ],
+  "controllers/tour.controller.js": [
+    "models/notification.model.js",
+    "models/tour.model.js",
+    "models/user.model.js",
+    "utils/error.js",
+    "utils/escapeRegex.js",
+    "utils/supabaseStorage.js"
+  ],
+  "controllers/upload.controller.js": [
+    "utils/error.js",
+    "utils/supabaseStorage.js"
+  ],
+  "controllers/user.controller.js": [
+    "models/user.model.js",
+    "utils/error.js"
+  ],
+  "index.js": [
+    "config/db.js",
+    "routes/admin.route.js",
+    "routes/adminAuth.route.js",
+    "routes/auth.route.js",
+    "routes/blog.route.js",
+    "routes/blogComment.route.js",
+    "routes/booking.route.js",
+    "routes/notification.route.js",
+    "routes/review.route.js",
+    "routes/tour.route.js",
+    "routes/upload.route.js",
+    "routes/user.route.js"
+  ],
+  "models/blog.model.js": [],
+  "models/blogComment.model.js": [],
+  "models/booking.model.js": [],
+  "models/notification.model.js": [],
+  "models/review.model.js": [],
+  "models/tour.model.js": [],
+  "models/user.model.js": [],
+  "routes/admin.route.js": [
+    "controllers/admin.controller.js",
+    "utils/verifyAdmin.js"
+  ],
+  "routes/adminAuth.route.js": [
+    "controllers/adminAuth.controller.js"
+  ],
+  "routes/auth.route.js": [
+    "controllers/auth.controller.js"
+  ],
+  "routes/blog.route.js": [
+    "controllers/blog.controller.js",
+    "utils/verifyUser.js"
+  ],
+  "routes/blogComment.route.js": [
+    "controllers/blogComment.controller.js"
+  ],
+  "routes/booking.route.js": [
+    "controllers/booking.controller.js"
+  ],
+  "routes/notification.route.js": [
+    "controllers/notification.controller.js",
+    "utils/verifyAdmin.js",
+    "utils/verifyUser.js"
+  ],
+  "routes/review.route.js": [
+    "controllers/review.controller.js",
+    "utils/verifyAdmin.js"
+  ],
+  "routes/tour.route.js": [
+    "controllers/tour.controller.js",
+    "utils/verifyAdmin.js"
+  ],
+  "routes/upload.route.js": [
+    "controllers/upload.controller.js",
+    "utils/supabaseStorage.js",
+    "utils/verifyUser.js"
+  ],
+  "routes/user.route.js": [
+    "controllers/user.controller.js",
+    "utils/verifyUser.js"
+  ],
+  "utils/error.js": [],
+  "utils/escapeRegex.js": [],
+  "utils/jwt.js": [],
+  "utils/supabaseStorage.js": [],
+  "utils/verifyAdmin.js": [
+    "utils/error.js",
+    "utils/jwt.js"
+  ],
+  "utils/verifyUser.js": [
+    "utils/error.js",
+    "utils/jwt.js"
+  ]
+}
