@@ -1,0 +1,23 @@
+
+D:\Ghuroo\api\controllers\adminAuth.controller.js
+  18:11  warning  'newAdmin' is assigned a value but never used  no-unused-vars
+
+D:\Ghuroo\api\controllers\auth.controller.js
+   78:7  error  Duplicate key 'role'  no-dupe-keys
+  121:7  error  Duplicate key 'role'  no-dupe-keys
+
+D:\Ghuroo\api\controllers\booking.controller.js
+  150:11  warning  'previousBooking' is assigned a value but never used  no-unused-vars
+
+D:\Ghuroo\api\controllers\tour.controller.js
+  62:11  warning  'admin' is assigned a value but never used  no-unused-vars
+
+D:\Ghuroo\api\controllers\upload.controller.js
+  1:10  warning  'supabaseStorage' is defined but never used  no-unused-vars
+
+D:\Ghuroo\api\index.js
+  17:19  warning  'join' is defined but never used  no-unused-vars
+  78:25  warning  'next' is defined but never used  no-unused-vars
+
+✖ 8 problems (2 errors, 6 warnings)
+

@@ -1,0 +1,64 @@
+diff --git a/api/controllers/blog.controller.js b/api/controllers/blog.controller.js
+index 3afc046..d175d63 100644
+--- a/api/controllers/blog.controller.js
++++ b/api/controllers/blog.controller.js
+@@ -3,6 +3,7 @@ import User from "../models/user.model.js";
+ import Notification from "../models/notification.model.js";
+ import { errorHandler } from "../utils/error.js";
+ import { supabaseStorage, uploadToSupabase } from "../utils/supabaseStorage.js";
++import { escapeRegex } from "../utils/escapeRegex.js";
+ 
+ export const upload = supabaseStorage;
+ 
+@@ -179,10 +180,11 @@ export const searchBlogs = async (req, res, next) => {
+       return next(errorHandler(400, "Search term is required"));
+     }
+ 
++    const safeTerm = escapeRegex(term);
+     const searchQuery = {
+       $or: [
+-        { title: { $regex: term, $options: "i" } },
+-        { content: { $regex: term, $options: "i" } },
++        { title: { $regex: safeTerm, $options: "i" } },
++        { content: { $regex: safeTerm, $options: "i" } },
+       ],
+     };
+ 
+diff --git a/api/controllers/tour.controller.js b/api/controllers/tour.controller.js
+index 0aa341b..4a3c1a7 100644
+--- a/api/controllers/tour.controller.js
++++ b/api/controllers/tour.controller.js
+@@ -3,6 +3,7 @@ import User from "../models/user.model.js";
+ import Notification from "../models/notification.model.js";
+ import { errorHandler } from "../utils/error.js";
+ import { supabaseStorage, uploadToSupabase } from "../utils/supabaseStorage.js";
++import { escapeRegex } from "../utils/escapeRegex.js";
+ 
+ export const upload = supabaseStorage;
+ 
+@@ -203,12 +204,13 @@ export const searchTours = async (req, res, next) => {
+ 
+     const numericTerm = parseFloat(term);
+     const isNumeric = !isNaN(numericTerm);
++    const safeTerm = escapeRegex(term);
+ 
+     const searchQuery = {
+       $or: [
+-        { title: { $regex: term, $options: "i" } },
+-        { description: { $regex: term, $options: "i" } },
+-        { location: { $regex: term, $options: "i" } },
++        { title: { $regex: safeTerm, $options: "i" } },
++        { description: { $regex: safeTerm, $options: "i" } },
++        { location: { $regex: safeTerm, $options: "i" } },
+       ],
+     };
+ 
+@@ -257,7 +259,7 @@ export const getToursByLocation = async (req, res, next) => {
+     }
+ 
+     const tours = await Tour.find({
+-      location: { $regex: `^${location}$`, $options: "i" }, 
++      location: { $regex: `^${escapeRegex(location)}$`, $options: "i" },
+     })
+       .populate("created_by", "full_name")
+       .sort({ created_at: -1 });

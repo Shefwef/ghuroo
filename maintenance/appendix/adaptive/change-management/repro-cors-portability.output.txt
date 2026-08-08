@@ -1,0 +1,11 @@
+=== OLD config: hardcoded single origin ===
+  Origin: https://ghuroo.onrender.com  -> access-control-allow-origin: https://ghuroo.onrender.com
+  Origin: https://ghuroo.app           -> access-control-allow-origin: (absent = blocked by browser CORS)
+
+=== NEW config: ALLOWED_ORIGINS unset (must match old behaviour) ===
+  Origin: https://ghuroo.onrender.com  -> access-control-allow-origin: https://ghuroo.onrender.com
+  Origin: https://ghuroo.app           -> access-control-allow-origin: (absent = blocked by browser CORS)
+
+=== NEW config: ALLOWED_ORIGINS=https://ghuroo.onrender.com,https://ghuroo.app ===
+  Origin: https://ghuroo.onrender.com  -> access-control-allow-origin: https://ghuroo.onrender.com
+  Origin: https://ghuroo.app           -> access-control-allow-origin: https://ghuroo.app

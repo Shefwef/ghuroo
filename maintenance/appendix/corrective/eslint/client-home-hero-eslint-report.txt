@@ -1,0 +1,13 @@
+
+D:\Ghuroo\client\src\components\Hero.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+D:\Ghuroo\client\src\pages\Home.jsx
+    1:8   error  'React' is defined but never used                                no-unused-vars
+    3:8   error  'Hero' is defined but never used                                 no-unused-vars
+  331:22  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  366:53  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  366:71  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+✖ 6 problems (6 errors, 0 warnings)
+
