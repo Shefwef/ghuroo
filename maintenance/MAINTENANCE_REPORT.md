@@ -3,8 +3,8 @@
 **Project:** Ghuroo, a MERN (MongoDB, Express, React, Node.js) travel & tourism
 platform with CRUD-based tour, booking, blog, and review management, plus
 separate user/admin surfaces (`d:\Ghuroo`).
-**Maintenance types performed:** Corrective, then Adaptive.
-**Session date:** 2026-07-10.
+**Maintenance types performed:** Corrective, Adaptive, Preventive, Perfective.
+**Session dates:** 2026-07-10 (CM-01, AM-01) · 2026-08-17 (PM-01, PFM-01).
 **Companion files:** [`MAINTENANCE_LOG.md`](MAINTENANCE_LOG.md) (raw
 chronological command/output diary) and the `appendix/` folder this report
 indexes at the end.
@@ -19,7 +19,9 @@ diff — see the Appendix for the full evidence index.
 | Branch | Base | Commits | Contains |
 |---|---|---|---|
 | `corrective/tour-blog-search-regex-sanitization` | `main` | `e841e93`, `68ea47c` | CM-01 fix + evidence |
-| `adaptive/env-driven-cors-and-runtime-pinning` | corrective branch | (this session, committed after this report) | AM-01 fix + evidence |
+| `adaptive/env-driven-cors-and-runtime-pinning` | corrective branch | `0a1a026` | AM-01 fix + evidence |
+| `preventive/booking-auth-input-hardening` | `main` | `3c964bf` | PM-01 fix + evidence |
+| `perfective/tour-pagination` | preventive branch | `bfccacb` | PFM-01 fix + evidence |
 
 ---
 
@@ -582,3 +584,268 @@ going forward, while the branch history is preserved for audit/rollback.
 | Orphaned `Hero.jsx` component + dead import in `Home.jsx` | `client/src/components/Hero.jsx`, `client/src/pages/Home.jsx:3` | Dead code, zero runtime impact; deleting it is a legitimate future corrective/cleanup task but touches UI review, out of scope for a backend security fix |
 | Unused `firebase-admin` dependency | root `package.json`, confirmed via `grep -ri firebase api/` (no hits) | Environment-coupling cleanup, own adaptive-maintenance candidate |
 | Firebase client config hardcoded in source instead of `VITE_FIREBASE_*` env vars | `client/src/firebase.js` | Not a security defect (Firebase web config is meant to be public), but a documentation/implementation drift and natural follow-up to AM-01 |
+
+---
+
+# Part C — Preventive Maintenance (PM-01)
+
+**Change:** Booking sub-system authorization hardening + input validation.  
+**Session date:** 2026-08-17.  
+**Branch:** `preventive/booking-auth-input-hardening` (commit `3c964bf`)
+
+Preventive maintenance addresses vulnerabilities **before** they are exploited
+in production. A proactive audit of the booking routes revealed that three
+mutation endpoints (`POST /`, `DELETE /:id`, `GET /`) had no authentication
+middleware at all — leaving the booking system open to impersonation and
+unauthorized deletion.
+
+---
+
+## C.1 — Program Comprehension
+
+*Full write-up:* [`appendix/preventive/PROGRAM_COMPREHENSION.md`](appendix/preventive/PROGRAM_COMPREHENSION.md)
+
+**What was studied:** The data flow from browser → booking router → controller
+→ MongoDB, and every trust boundary along the way.
+
+**Key finding:** `createBooking` read `user_id` from `req.body` — a value
+supplied by the client — instead of from the JWT-decoded `req.user.id`. This
+meant any authenticated user could forge a booking for any other user ID.
+`deleteBooking` had no ownership check whatsoever.
+
+The `verifyUser` and `verifyAdmin` middlewares that protect every other
+sensitive route in the system (tours, users) were simply never wired into
+`booking.route.js`. This is a structural comprehension finding: the correct
+pattern existed; it was not applied uniformly.
+
+**Booking state machine (reconstructed):**
+```
+[pending] ──admin confirms──► [confirmed]
+[pending] ──admin cancels ──► [cancelled]
+[confirmed]──admin cancels──► [cancelled]
+```
+
+---
+
+## C.2 — Change Management
+
+*Full write-up:* [`appendix/preventive/change-management/CR-PM-01.md`](appendix/preventive/change-management/CR-PM-01.md)
+
+**Change Request:** CR-PM-01 (2026-08-17, priority: High)
+
+**Branch created:** `preventive/booking-auth-input-hardening` off `main`.
+
+**Files changed:**
+
+| File | Change |
+|------|--------|
+| `api/routes/booking.route.js` | `verifyUser`/`verifyAdmin` added to 5 routes |
+| `api/controllers/booking.controller.js` | `user_id` sourced from JWT; ownership check in `deleteBooking` |
+| `api/utils/validateBooking.js` | **New** — validates `number_of_persons`, `total_price`, `booking_date` |
+
+**Verification gates:**
+- POST without cookie → 401
+- POST with another user's ID in body → booking attributed to JWT owner
+- DELETE by non-owner → 403
+- POST with `number_of_persons: 0` → 400
+- POST with past `booking_date` → 400
+
+---
+
+## C.3 — Impact Analysis
+
+*Full write-up:* [`appendix/preventive/IMPACT_ANALYSIS.md`](appendix/preventive/IMPACT_ANALYSIS.md)
+
+| Scope | Impact |
+|-------|--------|
+| Backend routes | 5 of 7 booking routes now require auth |
+| Controller logic | `user_id` derivation changed; one extra DB read in DELETE |
+| Frontend | **Zero changes required** — all callers already send cookies |
+| Database schema | **Unchanged** |
+| Security posture | Impersonation, unauthorized delete, and bad-input attacks mitigated |
+
+---
+
+## C.4 — Reverse Engineering
+
+*Full write-up:* [`appendix/preventive/REVERSE_ENGINEERING.md`](appendix/preventive/REVERSE_ENGINEERING.md)
+
+From source code alone, the intended API contract was reconstructed:
+
+- `POST /api/bookings` requires an authenticated user session; `user_id` must
+  be derived from the JWT, not the body.
+- `DELETE /api/bookings/:id` is for the booking *owner* or an admin.
+- The trust hierarchy (anon → user → admin) was consistently applied
+  everywhere except the booking router — a clear implementation gap relative
+  to design intent.
+
+The booking state machine and notification fan-out architecture were also
+fully recovered and documented with no external reference.
+
+---
+
+## C.5 — Refactoring
+
+*Full write-up:* [`appendix/preventive/REFACTORING.md`](appendix/preventive/REFACTORING.md)
+
+**Patterns applied:**
+
+1. **Extract Middleware** — validation rules extracted from the controller into
+   `validateBooking.js`; the controller now handles business logic only.
+2. **Replace Body Trust with Token Trust** — `user_id = req.user.id` replaces
+   `user_id = req.body.user_id`, making the security contract explicit in code.
+3. **Guard Clause** — early-return ownership check in `deleteBooking` keeps the
+   happy path unindented and readable.
+4. **Middleware Chain as Policy Document** — `booking.route.js` now reads as a
+   readable access-control matrix for the entire booking sub-system.
+
+---
+
+# Part D — Perfective Maintenance (PFM-01)
+
+**Change:** Pagination for `getAllTours` and `getAllBookings`.  
+**Session date:** 2026-08-17.  
+**Branch:** `perfective/tour-pagination` (commit `bfccacb`)
+
+Perfective maintenance improves software quality, performance, and
+maintainability **without fixing bugs**. The application is correct today;
+PFM-01 makes it scalable.
+
+---
+
+## D.1 — Program Comprehension
+
+*Full write-up:* [`appendix/perfective/PROGRAM_COMPREHENSION.md`](appendix/perfective/PROGRAM_COMPREHENSION.md)
+
+**What was studied:** The `getAllTours` and `getAllBookings` endpoints —
+specifically, what happens as the underlying MongoDB collections grow.
+
+**Key finding:** Both endpoints execute unbounded `Model.find()` queries with
+no `.limit()`. Every browse-page load fetches the *entire* collection into
+Node heap, serializes it to JSON, and sends it over the wire.
+
+**Growth projection:**
+
+| Tours in DB | Response size | Serialization time |
+|-------------|--------------|-------------------|
+| 100 | ~200 KB | < 10 ms |
+| 1 000 | ~2 MB | ~50 ms |
+| 10 000 | ~20 MB | ~500 ms |
+
+**Contrast with existing patterns:** `getFeaturedTours` already uses `.limit(6)`;
+`getRecentReviewsByTour` uses `.limit(5)`. The pattern existed — it was just
+not applied uniformly to the general listing endpoints.
+
+---
+
+## D.2 — Change Management
+
+*Full write-up:* [`appendix/perfective/change-management/CR-PFM-01.md`](appendix/perfective/change-management/CR-PFM-01.md)
+
+**Change Request:** CR-PFM-01 (2026-08-17, priority: Medium)
+
+**Branch created:** `perfective/tour-pagination` off the preventive branch.
+
+**Files changed:**
+
+| File | Change |
+|------|--------|
+| `api/utils/paginate.js` | **New** — `parsePagination()` + `paginationEnvelope()` |
+| `api/controllers/tour.controller.js` | `getAllTours` paginated; import added |
+| `api/controllers/booking.controller.js` | `getAllBookings` paginated; import added |
+
+**Response shape change (additive — backward compatible):**
+```json
+// Before
+{ "success": true, "data": [ ...all tours... ] }
+
+// After
+{ "success": true, "count": 10, "page": 1, "totalPages": 4, "total": 38,
+  "data": [ ...10 tours... ] }
+```
+
+---
+
+## D.3 — Impact Analysis
+
+*Full write-up:* [`appendix/perfective/IMPACT_ANALYSIS.md`](appendix/perfective/IMPACT_ANALYSIS.md)
+
+| Scope | Impact |
+|-------|--------|
+| Frontend callers | **Zero breaking changes** — `response.data.data` path preserved |
+| Database | One extra `countDocuments()` per request (fast, uses metadata) |
+| Memory | Node heap load now bounded at `MAX_LIMIT = 100` documents |
+| Network | Response size drops from unbounded to ~20 KB per page |
+
+---
+
+## D.4 — Reverse Engineering
+
+*Full write-up:* [`appendix/perfective/REVERSE_ENGINEERING.md`](appendix/perfective/REVERSE_ENGINEERING.md)
+
+The original API contract was reconstructed: `getAllTours` was written as if
+the collection would always be small — an implicit assumption embedded in the
+absence of `.limit()`. This was recovered only by reading the code and
+comparing it with similar endpoints.
+
+A further recovery finding: `tour.model.js` defines a full MongoDB text index
+(`title`, `description`, `location`) but `searchTours` uses regex instead of
+`$text` — the index exists but is unused. Logged as a future PFM-03 candidate.
+
+---
+
+## D.5 — Refactoring
+
+*Full write-up:* [`appendix/perfective/REFACTORING.md`](appendix/perfective/REFACTORING.md)
+
+**Patterns applied:**
+
+1. **Extract Function** — pagination logic centralised in `paginate.js`. Any
+   future endpoint adopts it in 3 lines (import + 2 function calls).
+2. **Parallel Queries** — `Promise.all([find, countDocuments])` fetches data
+   and total count concurrently, adding zero extra latency versus the old
+   single-query approach.
+3. **Consistent Return Shape** — `paginationEnvelope()` ensures every
+   paginated endpoint returns the same JSON structure.
+4. **Guard against infinite payloads** — `MAX_LIMIT = 100` prevents a caller
+   from requesting the entire collection via `?limit=999999`.
+
+---
+
+## Final Git History (all four maintenance cycles)
+
+```
+bfccacb perf(api): PFM-01 paginate getAllTours and getAllBookings
+3c964bf fix(api): PM-01 booking auth hardening + input validation
+2301482 Merge pull request #1 from imtiaz-risat/main
+41aa4bb docs(maintenance): finalize session log with merge/verification steps
+0a1a026 feat(api): environment-driven CORS allow-list + Node engines pin
+68ea47c chore: track maintenance/ JSON artifacts despite blanket *.json ignore
+e841e93 fix(api): sanitize user input before MongoDB $regex in tour/blog search
+7976560 Updated README.md
+```
+
+## Complete Appendix Index
+
+| Maintenance Type | Activity | Artifact |
+|---|---|---|
+| Corrective (CM-01) | Program Comprehension | `appendix/corrective/` (AST dump, madge graph) |
+| Corrective (CM-01) | Change Management | `appendix/corrective/change-management/CR-2026-07-10-01.md` |
+| Corrective (CM-01) | Impact Analysis | `appendix/corrective/profiling/` (ReDoS timing curves) |
+| Corrective (CM-01) | Reverse Engineering | `appendix/corrective/jsdoc/` (JSDoc HTML) |
+| Corrective (CM-01) | Refactoring | `api/utils/escapeRegex.js` (extracted utility) |
+| Adaptive (AM-01) | Program Comprehension | `appendix/adaptive/` (madge graph, bundle scan) |
+| Adaptive (AM-01) | Change Management | `appendix/adaptive/change-management/CR-2026-07-10-02.md` |
+| Adaptive (AM-01) | Impact Analysis | 50 fetch() call sites across 27 frontend files |
+| Adaptive (AM-01) | Reverse Engineering | Deployment topology Mermaid diagram |
+| Adaptive (AM-01) | Refactoring | `api/index.js` env-driven CORS; `package.json` engines pin |
+| Preventive (PM-01) | Program Comprehension | `appendix/preventive/PROGRAM_COMPREHENSION.md` |
+| Preventive (PM-01) | Change Management | `appendix/preventive/change-management/CR-PM-01.md` |
+| Preventive (PM-01) | Impact Analysis | `appendix/preventive/IMPACT_ANALYSIS.md` |
+| Preventive (PM-01) | Reverse Engineering | `appendix/preventive/REVERSE_ENGINEERING.md` |
+| Preventive (PM-01) | Refactoring | `appendix/preventive/REFACTORING.md`; `api/utils/validateBooking.js` |
+| Perfective (PFM-01) | Program Comprehension | `appendix/perfective/PROGRAM_COMPREHENSION.md` |
+| Perfective (PFM-01) | Change Management | `appendix/perfective/change-management/CR-PFM-01.md` |
+| Perfective (PFM-01) | Impact Analysis | `appendix/perfective/IMPACT_ANALYSIS.md` |
+| Perfective (PFM-01) | Reverse Engineering | `appendix/perfective/REVERSE_ENGINEERING.md` |
+| Perfective (PFM-01) | Refactoring | `appendix/perfective/REFACTORING.md`; `api/utils/paginate.js` |

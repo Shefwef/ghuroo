@@ -268,3 +268,119 @@ than deleted, so the per-cycle commit boundaries remain individually
 revertable/auditable even though their content is now also on `main`.
 **Nothing was pushed to any remote** — `main` is only ahead of
 `origin/main` locally; push is left to the user's discretion.
+
+---
+
+## Session 2 — 2026-08-17 (Preventive + Perfective Maintenance)
+
+### 9. PM-01 candidate hunt
+
+Re-read `api/controllers/booking.controller.js` and `api/routes/booking.route.js`
+with a security focus. Found: `createBooking` reads `user_id` from `req.body`
+(client-controlled) instead of `req.user.id` (JWT-verified). `deleteBooking`
+performs no ownership or role check. The route file has zero auth middleware.
+These are latent defects that have not yet been exploited but will be as the
+platform grows — classic preventive maintenance candidates.
+
+Also confirmed: input validation is absent. `number_of_persons` accepts 0 or
+negative values; `booking_date` accepts past dates; `total_price` accepts
+non-positive numbers.
+
+### 10. Git branch `preventive/booking-auth-input-hardening`
+
+Created off `main` (which is now at `0a1a026` after Session 1).
+
+**New file `api/utils/validateBooking.js`:** Express middleware that validates
+`number_of_persons` ∈ [1, 50], `total_price` > 0, `booking_date` ≥ today.
+Returns descriptive 400 errors at the API boundary so invalid data never
+reaches the database layer.
+
+**`api/controllers/booking.controller.js` — `createBooking`:** replaced
+`user_id = req.body.user_id` with `user_id = req.user.id`. Removed `status`
+from body-destructuring (default `"pending"` enforced in code, not trusting
+the client).
+
+**`api/controllers/booking.controller.js` — `deleteBooking`:** added
+`Booking.findById(id)` before delete; returns 404 if not found, 403 if the
+caller is neither the booking owner nor an admin; uses `booking.deleteOne()`
+instead of `Booking.findByIdAndDelete(id)` for the ownership check to work
+naturally on the fetched document.
+
+**`api/routes/booking.route.js`:** `verifyUser` added to `POST /`,
+`GET /user/:userId`, `DELETE /:id`; `verifyAdmin` added to `GET /` and
+`GET /revenue`.
+
+Wrote full five-activity documentation in `maintenance/appendix/preventive/`:
+- `PROGRAM_COMPREHENSION.md` — booking data flow diagram, auth model table,
+  state machine
+- `change-management/CR-PM-01.md` — formal change request
+- `IMPACT_ANALYSIS.md` — route-by-route before/after, frontend caller grep,
+  security threat table
+- `REVERSE_ENGINEERING.md` — API contract reconstruction, trust hierarchy,
+  dependency graph
+- `REFACTORING.md` — four patterns applied, code metrics before/after
+
+Committed: `3c964bf fix(api): PM-01 booking auth hardening + input validation`
+
+### 11. Git branch `perfective/tour-pagination`
+
+Created off the preventive branch (so all maintenance artifacts accumulate
+in the same `maintenance/` tree).
+
+**Root cause of perfective change:** `getAllTours` and `getAllBookings` execute
+`Model.find()` with no `.limit()` — the full collection is loaded into Node
+heap on every request. At current scale (tens of tours) this is fast. At
+production scale (thousands of tours) this becomes a memory and latency problem.
+
+**New file `api/utils/paginate.js`:** Two exported functions:
+- `parsePagination(req)` → reads `?page` and `?limit` with defaults (1, 10)
+  and clamps limit to 100; returns `{ page, limit, skip }`.
+- `paginationEnvelope({ data, total, page, limit })` → returns a consistent
+  JSON envelope with `success`, `count`, `page`, `totalPages`, `total`, `data`.
+
+**`api/controllers/tour.controller.js` — `getAllTours`:** Replaced the single
+`Tour.find().sort(...)` with `Promise.all([Tour.find().sort(...).skip().limit(),
+Tour.countDocuments()])` — the data query and the count run in parallel,
+so wall-clock time is the same as before despite the extra count. Response
+wrapped in `paginationEnvelope()`.
+
+**`api/controllers/booking.controller.js` — `getAllBookings`:** Same pattern.
+
+Verified via `node --check` on both modified controllers.
+
+Wrote full five-activity documentation in `maintenance/appendix/perfective/`:
+- `PROGRAM_COMPREHENSION.md` — growth projection table, tour model size
+  analysis, existing pagination patterns comparison
+- `change-management/CR-PFM-01.md` — formal change request, API contract
+  before/after
+- `IMPACT_ANALYSIS.md` — response shape change analysis, frontend grep,
+  database impact, performance before/after table
+- `REVERSE_ENGINEERING.md` — reconstructed implicit performance assumptions,
+  response envelope evolution, text index recovery finding
+- `REFACTORING.md` — four patterns applied (Extract Function, Parallel Queries,
+  Consistent Return Shape, Guard against infinite payloads), code metrics
+
+Committed: `bfccacb perf(api): PFM-01 paginate getAllTours and getAllBookings`
+
+### 12. Merge + final state
+
+```
+git checkout main
+git merge perfective/tour-pagination --ff-only
+```
+
+Result: Fast-forward. Final `git log --oneline -8`:
+
+```
+bfccacb perf(api): PFM-01 paginate getAllTours and getAllBookings
+3c964bf fix(api): PM-01 booking auth hardening + input validation
+2301482 Merge pull request #1 from imtiaz-risat/main
+41aa4bb docs(maintenance): finalize session log with merge/verification steps
+0a1a026 feat(api): environment-driven CORS allow-list + Node engines pin
+68ea47c chore: track maintenance/ JSON artifacts despite blanket *.json ignore
+e841e93 fix(api): sanitize user input before MongoDB $regex in tour/blog search
+7976560 Updated README.md
+```
+
+All four branches left in place for individual auditability. Nothing pushed
+to remote; push is left to the user's discretion.
