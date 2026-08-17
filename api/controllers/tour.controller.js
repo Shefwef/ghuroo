@@ -4,6 +4,7 @@ import Notification from "../models/notification.model.js";
 import { errorHandler } from "../utils/error.js";
 import { supabaseStorage, uploadToSupabase } from "../utils/supabaseStorage.js";
 import { escapeRegex } from "../utils/escapeRegex.js";
+import { parsePagination, paginationEnvelope } from "../utils/paginate.js";
 
 export const upload = supabaseStorage;
 
@@ -92,12 +93,16 @@ export const createTour = async (req, res, next) => {
 
 export const getAllTours = async (req, res, next) => {
   try {
-    const tours = await Tour.find().sort({ created_at: -1 });
+    // PFM-01: paginate to prevent full-collection scans as the tour catalogue grows.
+    // Clients that do not send ?page / ?limit receive page 1 with 10 results
+    // (backward-compatible for any existing consumer that ignores extra envelope fields).
+    const { page, limit, skip } = parsePagination(req);
+    const [tours, total] = await Promise.all([
+      Tour.find().sort({ created_at: -1 }).skip(skip).limit(limit),
+      Tour.countDocuments(),
+    ]);
 
-    res.status(200).json({
-      success: true,
-      data: tours,
-    });
+    res.status(200).json(paginationEnvelope({ data: tours, total, page, limit }));
   } catch (error) {
     next(error);
   }

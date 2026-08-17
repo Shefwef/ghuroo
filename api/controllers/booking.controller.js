@@ -2,6 +2,7 @@ import Booking from "../models/booking.model.js";
 import User from "../models/user.model.js";
 import Tour from "../models/tour.model.js";
 import Notification from "../models/notification.model.js";
+import { parsePagination, paginationEnvelope } from "../utils/paginate.js";
 
 export const createBooking = async (req, res) => {
   console.log("Booking request body:", req.body);
@@ -92,11 +93,18 @@ export const getBookingsByTour = async (req, res) => {
 
 export const getAllBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find()
-      .populate("tour_id", "title")
-      .populate("user_id", "full_name")
-      .sort({ createdAt: -1 });
-    res.json({ success: true, data: bookings });
+    // PFM-01: paginate to avoid loading the full bookings collection on every admin page load.
+    const { page, limit, skip } = parsePagination(req);
+    const [bookings, total] = await Promise.all([
+      Booking.find()
+        .populate("tour_id", "title")
+        .populate("user_id", "full_name")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Booking.countDocuments(),
+    ]);
+    res.json(paginationEnvelope({ data: bookings, total, page, limit }));
   } catch (error) {
     console.error("Get all bookings error:", error);
     res.status(500).json({ success: false, message: error.message });
