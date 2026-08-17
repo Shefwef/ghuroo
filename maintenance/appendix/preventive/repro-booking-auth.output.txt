@@ -1,0 +1,38 @@
+
+────────────────────────────────────────────────────────────
+TEST 1 — Impersonation: booking with another user's ID in body
+────────────────────────────────────────────────────────────
+  [BEFORE PM-01] status=201 booked_as=user-bob-999
+  [AFTER  PM-01] status=201 booked_as=user-alice-001
+
+────────────────────────────────────────────────────────────
+TEST 2 — Unauthenticated access: no cookie sent
+────────────────────────────────────────────────────────────
+  [BEFORE PM-01] status=201 → accepted (no auth check)
+  [AFTER  PM-01] status=401 message="Not authenticated!"
+
+────────────────────────────────────────────────────────────
+TEST 3 — Input validation: number_of_persons = -1 (truthy, so old check misses it)
+────────────────────────────────────────────────────────────
+  [BEFORE PM-01] status=201 → accepted (-1 persons stored in DB)
+  [AFTER  PM-01] status=400 message="number_of_persons must be a whole number between 1 and 50"
+
+────────────────────────────────────────────────────────────
+TEST 4 — Input validation: total_price = -500
+────────────────────────────────────────────────────────────
+  [BEFORE PM-01] status=201 → accepted (negative price in DB)
+  [AFTER  PM-01] status=400 message="total_price must be a positive number"
+
+────────────────────────────────────────────────────────────
+TEST 5 — Input validation: booking_date in the past
+────────────────────────────────────────────────────────────
+  [BEFORE PM-01] status=201 → accepted (past date in DB)
+  [AFTER  PM-01] status=400 message="booking_date must not be in the past"
+
+────────────────────────────────────────────────────────────
+TEST 6 — Happy path: valid booking with auth cookie
+────────────────────────────────────────────────────────────
+  [BEFORE PM-01] status=201 booked_as=user-alice-001
+  [AFTER  PM-01] status=201 booked_as=user-alice-001
+
+

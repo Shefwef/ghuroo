@@ -1,0 +1,151 @@
+diff --git a/api/controllers/booking.controller.js b/api/controllers/booking.controller.js
+index 5100ed9..250aff7 100644
+--- a/api/controllers/booking.controller.js
++++ b/api/controllers/booking.controller.js
+@@ -7,34 +7,23 @@ export const createBooking = async (req, res) => {
+   console.log("Booking request body:", req.body);
+   try {
+     const {
+-      user_id,
+       tour_id,
+       booking_date,
+       total_price,
+       number_of_persons,
+-      status,
+     } = req.body;
+ 
+-    if (
+-      !user_id ||
+-      !tour_id ||
+-      !booking_date ||
+-      !total_price ||
+-      !number_of_persons
+-    ) {
+-      console.log("Missing required fields");
+-      return res
+-        .status(400)
+-        .json({ success: false, message: "Missing required fields" });
+-    }
++    // PM-01: use the identity from the verified JWT, not the request body,
++    // so a user cannot create bookings on behalf of another user.
++    const user_id = req.user.id;
+ 
+     const booking = new Booking({
+       user_id,
+       tour_id,
+       booking_date,
+-      total_price,
+-      number_of_persons,
+-      status: status || "pending",
++      total_price: Number(total_price),
++      number_of_persons: Number(number_of_persons),
++      status: "pending",
+     });
+ 
+     await booking.save();
+@@ -200,7 +189,17 @@ export const updateBookingStatus = async (req, res) => {
+ export const deleteBooking = async (req, res) => {
+   try {
+     const { id } = req.params;
+-    await Booking.findByIdAndDelete(id);
++
++    // PM-01: only the booking owner or an admin may cancel a booking.
++    const booking = await Booking.findById(id);
++    if (!booking) {
++      return res.status(404).json({ success: false, message: "Booking not found" });
++    }
++    if (booking.user_id.toString() !== req.user.id && !req.user.admin) {
++      return res.status(403).json({ success: false, message: "Not authorised to delete this booking" });
++    }
++
++    await booking.deleteOne();
+     res.json({ success: true, message: "Booking deleted" });
+   } catch (error) {
+     console.error("Delete booking error:", error);
+diff --git a/api/routes/booking.route.js b/api/routes/booking.route.js
+index 127890e..fb788e2 100644
+--- a/api/routes/booking.route.js
++++ b/api/routes/booking.route.js
+@@ -8,15 +8,19 @@ import {
+   updateBookingStatus,
+   deleteBooking,
+ } from "../controllers/booking.controller.js";
++import { verifyUser } from "../utils/verifyUser.js";
++import { verifyAdmin } from "../utils/verifyAdmin.js";
++import { validateBookingInput } from "../utils/validateBooking.js";
+ 
+ const router = express.Router();
+ 
+-router.post("/", createBooking);
+-router.get("/", getAllBookings);
+-router.get("/revenue",getRevenues);
+-router.get("/user/:userId", getBookingsByUser);
++// PM-01: every mutating booking route now requires a verified session.
++router.post("/", verifyUser, validateBookingInput, createBooking);
++router.get("/", verifyAdmin, getAllBookings);
++router.get("/revenue", verifyAdmin, getRevenues);
++router.get("/user/:userId", verifyUser, getBookingsByUser);
+ router.get("/tour/:tourId", getBookingsByTour);
+-router.put("/:id/status", updateBookingStatus);
+-router.delete("/:id", deleteBooking);
++router.put("/:id/status", verifyAdmin, updateBookingStatus);
++router.delete("/:id", verifyUser, deleteBooking);
+ 
+-export default router;
+\ No newline at end of file
++export default router;
+diff --git a/api/utils/validateBooking.js b/api/utils/validateBooking.js
+new file mode 100644
+index 0000000..f145732
+--- /dev/null
++++ b/api/utils/validateBooking.js
+@@ -0,0 +1,49 @@
++import { errorHandler } from "./error.js";
++
++const MAX_PERSONS = 50;
++const MIN_PRICE = 0.01;
++
++/**
++ * Express middleware: validates booking creation payload.
++ *
++ * Rules enforced proactively (PM-01):
++ *  - number_of_persons must be an integer in [1, MAX_PERSONS]
++ *  - total_price must be a positive number
++ *  - booking_date must be a parseable date that is today or in the future
++ *  - tour_id must be present
++ */
++export const validateBookingInput = (req, res, next) => {
++  const { tour_id, booking_date, total_price, number_of_persons } = req.body;
++
++  if (!tour_id) {
++    return next(errorHandler(400, "tour_id is required"));
++  }
++
++  const persons = Number(number_of_persons);
++  if (!Number.isInteger(persons) || persons < 1 || persons > MAX_PERSONS) {
++    return next(
++      errorHandler(
++        400,
++        `number_of_persons must be a whole number between 1 and ${MAX_PERSONS}`
++      )
++    );
++  }
++
++  const price = Number(total_price);
++  if (!isFinite(price) || price < MIN_PRICE) {
++    return next(errorHandler(400, "total_price must be a positive number"));
++  }
++
++  const date = new Date(booking_date);
++  if (isNaN(date.getTime())) {
++    return next(errorHandler(400, "booking_date must be a valid date"));
++  }
++
++  const today = new Date();
++  today.setHours(0, 0, 0, 0);
++  if (date < today) {
++    return next(errorHandler(400, "booking_date must not be in the past"));
++  }
++
++  next();
++};

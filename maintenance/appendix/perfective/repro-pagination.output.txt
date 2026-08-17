@@ -1,0 +1,71 @@
+
+────────────────────────────────────────────────────────────
+TEST 1 — parsePagination: default values (no query params)
+────────────────────────────────────────────────────────────
+  Input  : ?  (nothing)
+  Output : { page: 1, limit: 10, skip: 0 }
+  → page=1, limit=10, skip=0  (defaults)
+
+────────────────────────────────────────────────────────────
+TEST 2 — parsePagination: explicit page and limit
+────────────────────────────────────────────────────────────
+  Input  : ?page=3&limit=5
+  Output : { page: 3, limit: 5, skip: 10 }
+  → skip=10 means documents 11–15 are returned
+
+────────────────────────────────────────────────────────────
+TEST 3 — parsePagination: limit capped at MAX (100)
+────────────────────────────────────────────────────────────
+  Input  : ?page=1&limit=999
+  Output : { page: 1, limit: 100, skip: 0 }
+  → limit clamped to 100 — protects against unbounded queries
+
+────────────────────────────────────────────────────────────
+TEST 4 — parsePagination: page cannot go below 1
+────────────────────────────────────────────────────────────
+  Input  : ?page=-5&limit=10
+  Output : { page: 1, limit: 10, skip: 0 }
+  → page clamped to 1
+
+────────────────────────────────────────────────────────────
+TEST 5 — parsePagination: non-numeric values fall back to defaults
+────────────────────────────────────────────────────────────
+  Input  : ?page=abc&limit=xyz
+  Output : { page: 1, limit: 10, skip: 0 }
+  → defaults used (page=1, limit=10)
+
+────────────────────────────────────────────────────────────
+TEST 6 — paginationEnvelope: page 1 of 4 (38 total, limit 10)
+────────────────────────────────────────────────────────────
+  Response shape:
+{
+    "success": true,
+    "count": 10,
+    "page": 1,
+    "totalPages": 4,
+    "total": 38,
+    "data": "[...10 tours...]"
+}
+
+────────────────────────────────────────────────────────────
+TEST 7 — Before/After response shape for GET /api/tours
+────────────────────────────────────────────────────────────
+  BEFORE PFM-01 (getAllTours with 38 tours in DB):
+    { success: true, data: [...38 tours...] }  ← full collection every request
+    Response size with 1000 tours: ~2 MB
+    Response size with 10000 tours: ~20 MB
+
+  AFTER PFM-01:
+    { success: true, count: 10, page: 1, totalPages: 4, total: 38, data: [...10 tours...] }
+    Response size: constant ~20 KB regardless of collection size
+    Client paginates using ?page=2, ?page=3, ...
+    Client reads 'totalPages' to know how many pages exist
+
+────────────────────────────────────────────────────────────
+TEST 8 — Simulating 3 pages of 38 total tours (limit=15)
+────────────────────────────────────────────────────────────
+  ?page=1&limit=15 → docs 1–15, totalPages=3
+  ?page=2&limit=15 → docs 16–30, totalPages=3
+  ?page=3&limit=15 → docs 31–38, totalPages=3
+
+

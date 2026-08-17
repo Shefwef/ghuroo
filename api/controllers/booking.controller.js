@@ -68,9 +68,13 @@ export const createBooking = async (req, res) => {
 export const getBookingsByUser = async (req, res) => {
   try {
     const { userId } = req.params;
-    const bookings = await Booking.find({ user_id: userId }).populate(
-      "tour_id"
-    );
+
+    // PM-01: a user may only read their own bookings; admins may read any user's.
+    if (req.user.id !== userId && !req.user.admin) {
+      return res.status(403).json({ success: false, message: "Not authorised to view these bookings" });
+    }
+
+    const bookings = await Booking.find({ user_id: userId }).populate("tour_id");
     res.json({ success: true, data: bookings });
   } catch (error) {
     console.error("Get bookings by user error:", error);
