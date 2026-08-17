@@ -7,34 +7,23 @@ export const createBooking = async (req, res) => {
   console.log("Booking request body:", req.body);
   try {
     const {
-      user_id,
       tour_id,
       booking_date,
       total_price,
       number_of_persons,
-      status,
     } = req.body;
 
-    if (
-      !user_id ||
-      !tour_id ||
-      !booking_date ||
-      !total_price ||
-      !number_of_persons
-    ) {
-      console.log("Missing required fields");
-      return res
-        .status(400)
-        .json({ success: false, message: "Missing required fields" });
-    }
+    // PM-01: use the identity from the verified JWT, not the request body,
+    // so a user cannot create bookings on behalf of another user.
+    const user_id = req.user.id;
 
     const booking = new Booking({
       user_id,
       tour_id,
       booking_date,
-      total_price,
-      number_of_persons,
-      status: status || "pending",
+      total_price: Number(total_price),
+      number_of_persons: Number(number_of_persons),
+      status: "pending",
     });
 
     await booking.save();
@@ -200,7 +189,17 @@ export const updateBookingStatus = async (req, res) => {
 export const deleteBooking = async (req, res) => {
   try {
     const { id } = req.params;
-    await Booking.findByIdAndDelete(id);
+
+    // PM-01: only the booking owner or an admin may cancel a booking.
+    const booking = await Booking.findById(id);
+    if (!booking) {
+      return res.status(404).json({ success: false, message: "Booking not found" });
+    }
+    if (booking.user_id.toString() !== req.user.id && !req.user.admin) {
+      return res.status(403).json({ success: false, message: "Not authorised to delete this booking" });
+    }
+
+    await booking.deleteOne();
     res.json({ success: true, message: "Booking deleted" });
   } catch (error) {
     console.error("Delete booking error:", error);
