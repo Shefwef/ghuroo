@@ -1,0 +1,76 @@
+
+────────────────────────────────────────────────────────────────────────
+CODE CLONE DETECTION REPORT — Ghuroo API Controllers
+Technique: Token-based similarity (Jaccard index, Type-2 normalisation)
+────────────────────────────────────────────────────────────────────────
+
+PAIRWISE SIMILARITY MATRIX (threshold: ≥ 0.50 = clone pair)
+
+  Function A              Function B              Similarity  Clone Type
+  ────────────────────────────────────────────────────────────────────
+  searchTours             searchBlogs                80.0%   Type 2 (renamed identifiers)  ◄ CLONE
+  getAllTours             getAllBookings             64.3%   Type 3 (gapped / modified)  ◄ CLONE
+  searchTours             getAllTours                55.0%   Type 3 (gapped / modified)  ◄ CLONE
+  searchBlogs             getAllTours                52.6%   Type 3 (gapped / modified)  ◄ CLONE
+  createBooking           updateBookingStatus        51.4%   Type 3 (gapped / modified)  ◄ CLONE
+  searchBlogs             getAllBookings             47.4%   Not a clone
+  searchTours             getAllBookings             42.9%   Not a clone
+  getAllBookings          updateBookingStatus        36.0%   Not a clone
+  searchTours             createBooking              32.4%   Not a clone
+  searchTours             updateBookingStatus        31.3%   Not a clone
+  getAllTours             createBooking              31.3%   Not a clone
+  searchBlogs             createBooking              30.6%   Not a clone
+  getAllTours             updateBookingStatus        29.6%   Not a clone
+  searchBlogs             updateBookingStatus        29.0%   Not a clone
+  getAllBookings          createBooking              28.1%   Not a clone
+
+────────────────────────────────────────────────────────────────────────
+CLONE PAIRS IDENTIFIED:
+────────────────────────────────────────────────────────────────────────
+
+  Clone Pair 1: searchTours  ↔  searchBlogs
+  Type:        Type 2 (renamed identifiers)
+  Similarity:  80.0%
+  Shared structure:
+    const { term } = req.params  →  guard (!term)  →  escapeRegex(term)
+    →  { $or: [ { field: { $regex: safeTerm } }, ... ] }  →  Model.find()
+    →  res.status(200).json({ success: true, data })
+  Differences: model (Tour vs Blog), field names (location vs content),
+               numericTerm branch exists only in searchTours.
+  Maintenance note: the CM-01 fix (escapeRegex) was applied to BOTH
+  functions — this clone pair is what made the multi-site fix necessary.
+
+  Clone Pair 2: getAllTours  ↔  getAllBookings
+  Type:        Type 3 (gapped / modified)
+  Similarity:  64.3%
+  Shared structure:
+    parsePagination(req)  →  Promise.all([Model.find()...skip().limit(), countDocuments()])
+    →  res.json(paginationEnvelope({ data, total, page, limit }))
+  Differences: model (Tour vs Booking), field names, populate() calls.
+  Maintenance note: PFM-01 added pagination to BOTH functions simultaneously
+  because the same unbounded-query problem existed in both clone instances.
+
+  Clone Pair 3: searchTours  ↔  getAllTours
+  Type:        Type 3 (gapped / modified)
+  Similarity:  55.0%
+
+  Clone Pair 4: searchBlogs  ↔  getAllTours
+  Type:        Type 3 (gapped / modified)
+  Similarity:  52.6%
+
+  Clone Pair 5: createBooking  ↔  updateBookingStatus
+  Type:        Type 3 (gapped / modified)
+  Similarity:  51.4%
+  Shared structure: both fetch admins, fan-out Notification saves to all admins.
+  Differences: trigger event and notification title differ.
+  Maintenance note: a future refactor could extract the admin-notification
+  fan-out into a shared utility (DRY).
+
+────────────────────────────────────────────────────────────────────────
+SUMMARY:
+  Total function pairs analysed: 15
+  Clone pairs detected (≥50% similarity): 5
+  Most significant clone: searchTours ↔ searchBlogs (Type 2)
+    — this clone is what caused CM-01 to require a multi-site fix.
+────────────────────────────────────────────────────────────────────────
+

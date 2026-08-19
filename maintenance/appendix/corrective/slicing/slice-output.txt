@@ -1,0 +1,81 @@
+
+──────────────────────────────────────────────────────────────────────
+STATIC BACKWARD SLICE — searchTours, criterion: term @ $regex sink
+──────────────────────────────────────────────────────────────────────
+
+Slicing criterion: variable `term` at the MongoDB $regex property
+  → traces ALL statements that may influence $regex input
+
+  L01  ✔ IN SLICE
+         const { term } = req.params;
+         → DEFINE term  [SOURCE — HTTP req.params]
+
+  L02  ✔ IN SLICE
+         if (!term) return next(...)
+         → USE term  [guard — validates presence]
+
+  L03  ✔ IN SLICE
+         const numericTerm = parseFloat(term);
+         → USE term  → defines numericTerm
+
+  L04  ✔ IN SLICE
+         const isNumeric = !isNaN(numericTerm);
+         → USE numericTerm (derived from term)
+
+  L05  ✔ IN SLICE
+         const safeTerm = escapeRegex(term);
+         → USE term  → defines safeTerm  [FIX POINT]
+
+  L06  ✔ IN SLICE
+         { title:       { $regex: safeTerm } }
+         → USE safeTerm  *** SINK (title) ***
+
+  L07  ✔ IN SLICE
+         { description: { $regex: safeTerm } }
+         → USE safeTerm  *** SINK (description) ***
+
+  L08  ✔ IN SLICE
+         { location:    { $regex: safeTerm } }
+         → USE safeTerm  *** SINK (location) ***
+
+  L09  ✔ IN SLICE
+         if (isNumeric) { ... }
+         → USE isNumeric (derived from term)
+
+  L10  ✔ IN SLICE
+         searchQuery.$or.push({ price: numericTerm })
+         → USE numericTerm (derived from term)
+
+  L12  ✔ IN SLICE
+         const tours = await Tour.find(searchQuery)
+         → USE searchQuery (contains safeTerm)
+
+──────────────────────────────────────────────────────────────────────
+RESULT: 11 of 12 statements are in the backward slice.
+The entire data flow from HTTP input to $regex is exposed.
+──────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────
+FORWARD SLICE COMPARISON — term variable
+──────────────────────────────────────────────────────────────────────
+
+PRE-FIX (before CM-01):
+  req.params.term → term (unescaped) → { $regex: term }
+  Forward slice from term reaches $regex DIRECTLY.
+  Any regex metacharacter in term becomes part of the MongoDB regex.
+  e.g. term = '(a+)+$' triggers catastrophic backtracking → ReDoS.
+
+POST-FIX (after CM-01 — escapeRegex inserted at L05):
+  req.params.term → term → escapeRegex(term) → safeTerm → { $regex: safeTerm }
+  Forward slice from term now passes through the sanitization barrier.
+  Metacharacters are escaped before reaching $regex → no ReDoS possible.
+
+──────────────────────────────────────────────────────────────────────
+KEY MAINTENANCE INSIGHT:
+  The fix does NOT change the slice MEMBERSHIP (same statements in scope).
+  It changes the DATA FLOW: a sanitization node is inserted between the
+  tainted source (term) and the dangerous sink ($regex).
+  This is exactly what static code slicing is designed to reveal:
+  the full path from source to sink, and where the fix point should be.
+──────────────────────────────────────────────────────────────────────
+
